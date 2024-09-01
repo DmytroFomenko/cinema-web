@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageSeancesTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageSeancesTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <h1 class = "text-center m-3 mb-4 d-none"
+      th:text = "#{pageSeancesTitle}"></h1>
+
+  <th:block th:if = "${loggedUser != null}">
+    <th:block th:if = "${loggedUser.roleId == adminRoleId}">
+      <a class = "btn btn-primary float-right m-3"
+         style = "margin-left: 10px"
+         th:href = "@{/create_seance_form}"
+         th:text = "#{buttonCreateNewSeance}">
+      </a>
+    </th:block>
+  </th:block>
+
+  <div class = "w-100 mt-4 mb-3"
+       th:if = "${boughtTickets != null}">
+    <h3 th:text = "#{phraseYourTickets}"></h3>
+    <!-- Table of user tickets -->
+    <table class = "table table-sm">
+      <thead class = "table-info text-center">
+      <tr>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordTime}"></th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordFilm}"></th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordPlace}"></th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{phraseTicketCode}"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each = "tick : ${boughtTickets}"
+          th:class = "${#dates.createNow().after(seanceServ.findSeanceById(tick.seanceId).beginTime)} == true  ? 'bg-secondary' : ' '">
+        <td class = "text-center  align-middle h6"
+            th:text = "${#dates.format(seanceServ.findSeanceById(tick.seanceId).beginTime, 'HH:mm / dd.MM.yy')}"/>
+        <td class = "text-center  align-middle h6"
+            th:text = "${filmServ.findFilmById(seanceServ.findSeanceById(tick.seanceId).filmId).name}"/>
+        <td class = "text-center  align-middle h6"
+            th:text = "${placeServ.findPlaceById(tick.placeId).number}"/>
+        <td class = "text-center  align-middle h6"
+            th:text = "${tick.code}"/>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+</body>
+</html>

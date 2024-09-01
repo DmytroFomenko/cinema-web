@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageUpdatePlacementTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageUpdatePlacementTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageUpdatePlacementTitle}"></h1>
+      <div class = "card-body">
+        <form enctype = "multipart/form-data"
+              th:action = "@{/update_placement}"
+              th:object = "${placement}"
+              method = "POST">
+          <div class = "form-group">
+            <label for = "name"
+                   th:text = "#{placementNameLabel}"></label>
+            <input required
+                   class = "form-control"
+                   type = "text"
+                   id = "name"
+                   name = "name"
+                   th:field = "*{name}"
+                   th:minlength = "${@environment.getProperty('placement-name-min-length')}"
+                   th:maxlength = "${@environment.getProperty('placement-name-max-length')}"
+                   th:placeholder = "#{placementNamePlaceholder}"
+                   th:title = "#{placementNameTitle(${@environment.getProperty('placement-name-min-length')},
+                                                    ${@environment.getProperty('placement-name-max-length')})}"
+            />
+          </div>
+
+          <div class = "form-group">
+            <label th:text = "#{uploadImageLabel}"></label>
+            <div class = "form-group">
+              <input class = "form-control-file"
+                     type = "file"
+                     accept = "image/*"
+                     name = "imageFile"
+                     th:title = "#{placementImageUpdateTitle}"
+              />
+            </div>
+          </div>
+
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    type = "submit"
+                    name = "placementId"
+                    th:value = "${placementId}"
+                    th:text = "#{buttonSaveChanges}"
+            />
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

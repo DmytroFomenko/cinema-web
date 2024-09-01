@@ -1,0 +1,214 @@
+<!-- ***************************** -->
+<!-- * Buttons sorting Up / Down * -->
+<!-- ***************************** -->
+
+<th:block th:fragment = "sort_buttons(sort_param_name,
+                                      current_sorting_type,
+                                      sort_type_name,
+                                      off_value,
+                                      to_url,
+                                      sort_text)"
+          th:with = "arrowIconSize = 16">
+
+  <form class = "m-1"
+        method = "GET" th:action = "@{${to_url}}">
+    <div class = "btn-group"
+         role = "group"
+         th:aria-label = "${sort_param_name}">
+      <a type = "button"
+         class = "btn btn-secondary" style="background-color: #404040;"
+         th:text = "${sort_text}">
+      </a>
+
+      <!-- Button Up -->
+      <button type = "submit"
+              class = "d-flex btn btn-secondary px-0"
+              th:name = "${sort_type_name}"
+              th:value = "${current_sorting_type} == ${sort_param_name}  + 'Asc' ? ${off_value} : ${sort_param_name} + 'Asc'">
+        <th:block th:if = "${current_sorting_type} == ${sort_param_name} + 'Asc'">
+          <svg xmlns = "http://www.w3.org/2000/svg"
+               class = "bi bi-triangle my-auto mx-1"
+               th:width = "${arrowIconSize}"
+               th:height = "${arrowIconSize}"
+               fill = "currentColor"
+               viewBox = "0 0 16 16">
+            <path fill-rule = "evenodd"
+                  d = "M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z"/>
+          </svg>
+        </th:block>
+        <th:block th:if = "${current_sorting_type} != ${sort_param_name} + 'Asc'">
+          <svg xmlns = "http://www.w3.org/2000/svg"
+               class = "bi bi-triangle my-auto mx-1"
+               th:width = "${arrowIconSize}"
+               th:height = "${arrowIconSize}"
+               fill = "currentColor"
+               viewBox = "0 0 16 16">
+            <path
+                d = "M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+          </svg>
+        </th:block>
+      </button>
+
+      <!-- Button Down -->
+      <form method = "GET" th:action = "@{${to_url}}">
+        <button type = "submit"
+                class = "d-flex btn btn-secondary px-0"
+                th:name = "${sort_type_name}"
+                th:value = "${current_sorting_type} == ${sort_param_name}  + 'Desc' ? ${off_value} : ${sort_param_name} + 'Desc'">
+          <!-- "${sort_param_name} + 'Desc'" -->
+          <th:block th:if = "${current_sorting_type} == ${sort_param_name} + 'Desc'">
+            <svg xmlns = "http://www.w3.org/2000/svg"
+                 class = "bi bi-triangle my-auto mx-1"
+                 style = "transform:rotateX(180deg)"
+                 th:width = "${arrowIconSize}"
+                 th:height = "${arrowIconSize}"
+                 fill = "currentColor"
+                 viewBox = "0 0 16 16">
+              <path fill-rule = "evenodd"
+                    d = "M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z"/>
+            </svg>
+          </th:block>
+          <th:block th:if = "${current_sorting_type} != ${sort_param_name} + 'Desc'">
+            <svg xmlns = "http://www.w3.org/2000/svg"
+                 class = "bi bi-triangle my-auto mx-1"
+                 style = "transform:rotateX(180deg)"
+                 th:width = "${arrowIconSize}"
+                 th:height = "${arrowIconSize}"
+                 fill = "currentColor"
+                 viewBox = "0 0 16 16">
+              <path
+                  d = "M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+            </svg>
+          </th:block>
+        </button>
+      </form>
+    </div>
+  </form>
+</th:block>
+
+<!-- *************************** -->
+<!-- * Buttons Switch On / Off * -->
+<!-- *************************** -->
+
+<th:block th:fragment = "swith_button(siwtch_param_name,
+                                      current_switch_state,
+                                      to_url,
+                                      switch_text)"
+          th:with = "switchIconSize = 24">
+
+  <form class = "m-1"
+        method = "GET" th:action = "@{${to_url}}">
+    <div class = "btn-group"
+         role = "group"
+         th:aria-label = "${siwtch_param_name}">
+      <a type = "button"
+         class = "btn btn-secondary" style="background-color: #404040;"
+         th:text = "${switch_text}">
+      </a>
+
+      <!-- Button Switch -->
+      <button type = "submit"
+              class = "d-flex btn btn-secondary px-0"
+              th:name = "${siwtch_param_name}"
+              th:value = " ${not current_switch_state}">
+        <th:block th:if = "${current_switch_state}">
+          <svg xmlns = "http://www.w3.org/2000/svg"
+               class = "bi bi-toggle-on my-auto mx-1"
+               th:width = "${switchIconSize}"
+               th:height = "${switchIconSize}"
+               fill = "currentColor"
+               viewBox = "0 0 16 16">
+            <path d = "M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+          </svg>
+        </th:block>
+        <th:block th:if = "${not current_switch_state}">
+          <svg xmlns = "http://www.w3.org/2000/svg"
+               class = "bi bi-toggle-off my-auto mx-1"
+               th:width = "${switchIconSize}"
+               th:height = "${switchIconSize}"
+               fill = "currentColor"
+               viewBox = "0 0 16 16">
+            <path
+                d = "M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4h3zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5z"/>
+          </svg>
+        </th:block>
+      </button>
+    </div>
+  </form>
+</th:block>
+
+<!-- *************************** -->
+<!-- * Button with Date picker * -->
+<!-- *************************** -->
+
+<th:block th:fragment = "date_button(date_param_name,
+                                     current_date,
+                                     min_date,
+                                     off_value,
+                                     to_url,
+                                     date_text)"
+          th:with = "dateIconSize = 24">
+
+  <div class = "btn-group m-1"
+       role = "group"
+       th:aria-label = "${date_param_name}">
+    <a type = "button"
+       class = "btn btn-secondary" style="background-color: #404040;"
+       th:text = "${date_text}">
+    </a>
+    <form class = "btn-group"
+          method = "GET"
+          th:action = "@{${to_url}}">
+      <!-- <i></i> -->
+      <!-- Button Calendar -->
+      <button type = "submit"
+              class = "d-flex btn btn-secondary px-0"
+              th:name = "${date_param_name}"
+              th:value = "${current_date == off_value} ? ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')} : ${off_value}">
+        <th:block th:if = "${current_date == off_value}">
+          <svg xmlns = "http://www.w3.org/2000/svg"
+               class = "bi bi-calendar3 my-auto mx-1"
+               th:width = "${dateIconSize}"
+               th:height = "${dateIconSize}"
+               fill = "currentColor"
+               viewBox = "0 0 16 16">
+            <path
+                d = "M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
+            <path
+                d = "M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+          </svg>
+        </th:block>
+        <th:block th:if = "${current_date != off_value}">
+          <svg xmlns = "http://www.w3.org/2000/svg"
+               class = "bi bi-calendar-x my-auto mx-1"
+               th:width = "${dateIconSize}"
+               th:height = "${dateIconSize}"
+               fill = "currentColor"
+               viewBox = "0 0 16 16">
+            <path
+                d = "M6.146 7.146a.5.5 0 0 1 .708 0L8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 0 1 0-.708z"/>
+            <path
+                d = "M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+          </svg>
+        </th:block>
+      </button>
+      <!-- <i></i> -->
+    </form>
+    <form class = "btn-group"
+          id = "dateFormID"
+          method = "GET"
+          th:action = "@{${to_url}}">
+      <!-- Calendar -->
+      <input type = "date"
+             th:class = "|d-flex btn p-0 pr-2 mx-0 border-secondary ${current_date == off_value ? 'bg-secondary' : 'bg-light'}|"
+             th:disabled = "${current_date == off_value}"
+             th:name = "${date_param_name}"
+             th:value = "${current_date == off_value} ? '' : ${current_date}"
+             th:min = "${min_date}"
+             onchange = "let el=document.getElementById('dateFormID'); el.submit();"
+             onkeydown = "return false"
+      >
+    </form>
+  </div>
+</th:block>
+

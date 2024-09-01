@@ -1,0 +1,4 @@
+<th:block th:fragment = "currency_format(n)">
+  <th:block th:text = "#{wordPreCurrency}+(${@environment.getProperty('price-step', Long)} < 1 ? ${#numbers.formatDecimal(n, 1, 'NONE', 2, 'COMMA')} : ${#numbers.formatDecimal(n, 1, 'NONE', 0, 'COMMA')})+#{wordPostCurrency}">
+  </th:block>
+</th:block>

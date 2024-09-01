@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageByTicketTitle})}"></head>
+
+<body style = "background-image: url('/images/back.png');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: 100% 100%;">
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageByTicketTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <h1 class = "text-center m-3 mb-4 d-none"
+      th:text = "#{pageByTicketTitle}"></h1>
+  <div>
+    <table class = "table table-rounded-rows table-sm">
+      <tbody>
+      <tr>
+        <!-- Film image -->
+        <td class = "table-first-child table-last-child td-transparent p-15">
+        <div class = "text-center mb-4">
+          <h1 th:text = "${film.name}"></h1>
+          <h4 th:text = "${#dates.format(seance.beginTime, ' dd.MM.yy ')} +
+                          #{wordFrom} +
+                          ${#dates.format(seance.beginTime, ' HH:mm ')} +
+                          #{wordTo} +
+                          ${#dates.format(seance.calcEndTime(film.duration), ' HH:mm')}"></h4>
+        </div>
+
+        <div class = "container text-center mb-3">
+          <!-- Placement image -->
+          <div class = "mb-3 w-70 mx-auto"
+               th:if = "placementImageName != null">
+            <img class = "w-100 border rounded"
+                 src = ""
+                 alt = "Image"
+                 th:alt = "${placementImageName}"
+                 th:src = "@{'/'+${@environment.getProperty('app.cinemafiles-dir-name')}+'/'+${placementImageName}}">
+          </div>
+
+          <!-- Buttons of places -->
+          <div class = "d-flex flex-wrap justify-content-left mb-3">
+
+            <div class="m-2 ml-3 p-1 text-left bg-white" style="width: 190px; border: 2px solid #94f8ff; border-radius: 5px; font-size: 0.8em; font-weight: bold">
+              <nobr><div style="display: inline-block; width: 25px; height: 15px; background-color: #8aff9d; border-radius: 2px"></div> - Місце вільне</nobr><br>
+              <nobr><div style="display: inline-block; width: 25px; height: 15px; background-color: #efff8a; border-radius: 2px"></div> - Місце зарезервовано</nobr><br>
+              <nobr><div style="display: inline-block; width: 25px; height: 15px; background-color: #ff8aad; border-radius: 2px"></div> - Місце зайнято</nobr><br>
+              <nobr><div style="display: inline-block; width: 25px; height: 15px; border: 2px solid #0026e3; border-radius: 2px"></div> - Обробляється вами</nobr>
+            </div>
+
+            <th:block th:each = "ticket: ${tickets}">
+              <!-- Repeated places -->
+              <form class = "m-1 p-0"
+                    method = "POST"
+                    th:action = "@{/select_ticket}">
+                <input type = "hidden"
+                       name = "ticketId"
+                       th:value = "${ticket.id}">
+                <!--       'border-color: #0026e3; border-width: 5px'          <button type="submit" class="btn btn-primary" th:style="|background-color: ${ticket.getColorByStatus()}; color: black|"> -->
+                <button class = "btn"
+                        type = "submit"
+                        th:style = "|background-color: ${ticket.getColorByStatus()}; color: black; margin:5px; ${ticket.clientId == loggedUser.id ? ' outline:5px solid #0026e3' : ''} |">
+                  <span th:text = "${placeServ.findPlaceById(ticket.placeId).number}"/>
+                  <br>
+                  <span
+                      th:text = "${placeKindServ.findPlaceKindById(placeServ.findPlaceById(ticket.placeId).placeKindId).name}"/>
+                  <br>
+                  <span
+                      th:text = "${#numbers.formatDecimal((placeKindServ.findPlaceKindById(placeServ.findPlaceById(ticket.placeId).placeKindId).addPrice + seancePrice), 1, 'NONE', 2, 'DEFAULT')} + #{wordPostCurrency}"/>
+                </button>
+              </form>
+            </th:block>
+
+
+
+          </div>
+
+
+
+          <!-- Table of additions -->
+          <div class = "container">
+            <table class = "table table-bordered violet table-bordered-additions">
+              <!-- Header titles -->
+              <thead class = "table-additions-head text-center">
+              <tr>
+                <th class = "text-center align-middle h5 p-3">[[#{additionNameLabel}]]</th>
+                <th class = "text-center align-middle h5 p-3">[[#{wordPrice}]]
+                  <br>[[#{wordOfAddition}]], [[#{wordPostCurrency}]]
+                </th>
+                <th:block th:each = "ticket: ${reservedTickets}">
+                  <th class = "text-center align-middle h5 p-3"
+                      th:text = "${placeServ.findPlaceById(ticket.placeId).number}"/>
+                </th:block>
+              </tr>
+              </thead>
+
+              <tbody>
+              <th:block th:each = "addition: ${availableAdditions}">
+                <tr>
+                  <!-- Addition name cell -->
+                  <td class = "text-left align-middle td-transparent h6 p-1 pl-3"
+                      th:text = "${addition.name}"/>
+                  <!-- Price cell -->
+                  <td class = "text-center align-middle td-transparent h6 p-1"
+                      th:insert="~{fragments/currency_format :: currency_format(${addition.price})}">
+                  </td>
+                  <!-- Select addition button cells for each ticket -->
+                  <th:block th:each = "ticket: ${reservedTickets}">
+                    <td class = "text-center align-middle td-transparent p-1">
+                      <form method = "POST"
+                            th:action = "@{/select_ticket_addition}">
+                        <input type = "hidden"
+                               name = "ticketId"
+                               th:value = "${ticket.id}">
+                        <input type = "hidden"
+                               name = "additionId"
+                               th:value = "${addition.id}">
+                        <button
+                            class = "btn border-dark h-100"
+                            type = "submit"
+                            th:style = "${ticketAdditionServ.existsTicketAdditionByTicketIdAndAdditionId(ticket.id, addition.id)} == true ? 'color:white; background-color: green' : 'color:black; background-color: white'"
+                            th:text = "${ticketAdditionServ.existsTicketAdditionByTicketIdAndAdditionId(ticket.id, addition.id)} == true ? (#{wordToUnselect}) : (#{wordToSelect})">
+                        </button>
+                      </form>
+                    </td>
+                  </th:block>
+                </tr>
+              </th:block>
+              </tbody>
+            </table>
+          </div>
+
+
+          <div class = "d-flex justify-content-center align-items-center my-4">
+            <!-- Total price -->
+            <h4 class = "m-0 p-0 mr-3"
+                th:text = "|#{phraseTotalPrice}: ${#numbers.formatDecimal(totalPrice, 1, 'NONE', 2, 'DEFAULT')}#{wordPostCurrency}|">
+            </h4>
+            <!-- Buy button -->
+            <div th:if = "${totalPrice > 0}">
+              <form method = "POST"
+                    th:action = "@{/buy_tickets}">
+                <input name = "totalPrice"
+                       th:value = "${totalPrice}"
+                       type = "hidden">
+                <input name = "seanceId"
+                       th:value = "${seanceId}"
+                       type = "hidden">
+                <button class = "btn btn-success btn-lg" style="box-shadow: 0px 0px 2px 2px rgb(0,112,19); font-weight: bold"
+                        type = "submit"
+                        th:text = "#{wordBuy}">
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+
+
+<script th:inline = "javascript">
+
+    document.addEventListener("DOMContentLoaded", function (event) {
+        var user_was_logged = (localStorage.getItem('user_logged') != null);
+        var user_logged = ([[${session.loggedUser}]] != null);
+        var need_restore = [[${(error == null) || (error == '')}]];
+        if (user_logged !== user_was_logged) {
+            localStorage.removeItem('scroll_pos_seances');
+            localStorage.removeItem('scroll_pos_client_tickets');
+            localStorage.removeItem('scroll_pos_buy_ticket_form');
+        } else {
+            if (need_restore) {
+                var scroll_pos_buy_ticket_form = localStorage.getItem('scroll_pos_buy_ticket_form');
+                if (scroll_pos_buy_ticket_form) window.scrollTo(0, scroll_pos_buy_ticket_form);
+            }
+        }
+    });
+
+    window.onbeforeunload = function (e) {
+        var user_logged = ([[${session.loggedUser}]] != null);
+        if (user_logged) localStorage.setItem('user_logged', user_logged)
+        else localStorage.removeItem('user_logged');
+        localStorage.setItem('scroll_pos_buy_ticket_form', window.scrollY);
+    };
+</script>
+
+</html>

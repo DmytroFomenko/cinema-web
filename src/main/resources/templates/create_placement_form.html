@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageCreatePlacementTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageCreatePlacementTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageCreatePlacementTitle}"></h1>
+      <div class = "card-body">
+        <form enctype = "multipart/form-data"
+              method = "POST"
+              th:action = "@{/create_placement}"
+              th:object = "${placement}">
+          <div class = "form-group">
+            <label for = "name"
+                   th:text = "#{placementNameLabel}"></label>
+            <input class = "form-control"
+                   required
+                   type = "text"
+                   id = "name"
+                   name = "name"
+                   th:field = "*{name}"
+                   th:minlength = "${@environment.getProperty('placement-name-min-length')}"
+                   th:maxlength = "${@environment.getProperty('placement-name-max-length')}"
+                   th:placeholder = "#{placementNamePlaceholder}"
+                   th:title = "#{placementNameTitle(${@environment.getProperty('placement-name-min-length')},
+                                                    ${@environment.getProperty('placement-name-max-length')})}"
+            />
+
+          </div>
+
+          <div class = "form-group">
+            <label th:text="#{uploadImageLabel}"></label>
+            <div class = "form-group">
+              <input class = "form-control-file"
+                     required
+                     type = "file"
+                     accept = "image/*"
+                     name = "imageFile"
+                     th:title="#{placementImageCreateTitle}"
+              />
+            </div>
+          </div>
+
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    type = "submit"
+                    th:text = "#{buttonSave}"
+            />
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

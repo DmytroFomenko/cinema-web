@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageMoreInfoSeanceTitle})}"></head>
+
+<body style = "background-image: url('/images/back.png');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: 100% 100%;">
+
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageMoreInfoSeanceTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <h1 class = "text-center m-3 mb-4 d-none"
+      th:text = "#{pageMoreInfoSeanceTitle}"></h1>
+
+  <!-- Film image -->
+  <div>
+    <table class = "table table-rounded-rows table-sm">
+      <tbody>
+      <tr>
+        <!-- Film image -->
+        <td class = "table-first-child table-last-child td-transparent p-15">
+
+        <div class = "container-fluid float-left w-30 p-2 pt-3 px-3 mr-3 mb-4">
+          <img class = "w-100 rounded border border-white"
+               th:alt = "${film.imageName}"
+               th:src = "@{'/'+${@environment.getProperty('app.cinemafiles-dir-name')}+'/'+${film.getImageName()}}"/>
+        </div>
+        <!-- Film data  -->
+        <!-- Film name -->
+
+
+        <div class = "text-left p-2 h6">
+          <div class = "h3  text-center mb-5"
+               th:text = "${film.name}">FilmName
+          </div>
+          <!-- Seance data -->
+          <div class = "mb-4">
+            <table class = "font-italic table-not-striped table-borderless table-sm text-left mx-5">
+              <tr>
+                <td class = "align-top p-1 pr-2 pb-2"
+                    th:text = "|#{seanceDataText}:|">Seance date:
+                </td>
+                <td class = "align-bottom p-1 pl-2 pb-2"
+                    th:text = "|${#dates.format(seance.beginTime, 'dd.MM.yy')}|">12.12.2023
+                </td>
+              </tr>
+              <tr>
+                <td class = "align-top p-1 pr-2 pb-2"
+                    th:text = "|#{seanceTimeText}:|">Seance time:
+                </td>
+                <td class = "align-bottom p-1 pl-2 pb-2"
+                    th:text = "|${#dates.format(seance.beginTime, 'HH:mm')} - ${#dates.format(seance.calcEndTime(film.duration), 'HH:mm')}|">
+                  12:00 - 13:30
+                </td>
+              </tr>
+              <tr>
+                <td class = "align-top p-1 pr-2"
+                    th:text = "|#{seanceBasePriceText}:|">Base price:
+                </td>
+                <td class = "align-bottom p-1 pl-2"
+                    th:insert = "~{fragments/currency_format :: currency_format(${seance.getBasePrice()})}">3uah
+                </td>
+              </tr>
+
+              <tr>
+                <td class = "align-top p-1 pt-5 pr-2 pb-2"
+                    th:text = "|#{seanceDurationText}:|">Seance duration:
+                </td>
+                <td class = "align-bottom pt-5 p-1 pl-2 pb-2"
+                    th:text = "|${#numbers.formatInteger(film.duration.getHour(), 1)} #{wordHrs} ${#numbers.formatInteger(film.duration.getMinute(), 2)} #{wordMin}|">
+                  1h 35min
+                </td>
+              </tr>
+              <tr>
+                <td class = "align-top p-1 pr-2 pb-2"
+                    th:text = "|#{filmYearLabel}:|">Film premiere:
+                </td>
+                <td class = "align-bottom p-1 pl-2 pb-2"
+                    th:text = "|${#numbers.formatInteger(film.getYear(), 1)}|">2023
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- th:text = "|#{seanceBasePriceText}: ${#numbers.formatDecimal(seance.basePrice, 1, 'NONE', 2, 'DEFAULT')}#{wordPostCurrency}|"></span> -->
+            <div class = "mb-3"
+                 th:text = "${film.description}">
+            </div>
+          </div>
+
+
+
+  <div class = "d-flex w-100 justify-content-center align-items-center my-2" style="font-weight: bold; font-size: 1.2em">
+    <!--  Go to log in for buy ticket  -->
+    <th:block th:if = "${loggedUser == null}">
+      <div class = "m-0 p-0 mr-3"
+           th:text = "#{phraseLoginToByTicket}">
+      </div>
+      <a class = "btn btn-default" style="box-shadow: 0px 0px 2px 2px rgb(0,0,0); font-weight: bold"
+         th:href = "@{/login_user_form}"
+         th:text = "#{buttonToLogin}"></a>
+    </th:block>
+    <!--  Go to buy ticket  -->
+    <th:block th:if = "${loggedUser != null}">
+      <th:block th:if = "${loggedUser.roleId == clientRoleId && seance.isActualBeginTime()}">
+        <form th:action = "@{/buy_ticket_form}"
+              method = "GET">
+          <button class = "btn btn-lg btn-default" style="box-shadow: 0px 0px 2px 2px rgb(0,0,0); font-weight: bold"
+                  type = "submit"
+                  name = "seanceId"
+                  th:value = "${seance.id}"
+                  th:text = "#{phraseGoToByTicket}">
+          </button>
+        </form>
+      </th:block>
+    </th:block>
+  </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+</body>
+</html>

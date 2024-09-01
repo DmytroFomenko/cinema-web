@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageCreatePlaceTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageCreatePlaceTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageCreatePlaceTitle}"></h1>
+      <div class = "card-body">
+        <form th:action = "@{/create_place}"
+              th:object = "${place}"
+              method = "POST">
+          <div class = "form-group">
+            <label for = "placementId"
+                   th:text = "#{placementNameLabel}"></label>
+            <select class = "form-control"
+                    id = "placementId"
+                    name = "placementId">
+              <option th:each = "placement : ${placements}"
+                      th:field = "*{placementId}"
+                      th:text = "${placement.name}"
+                      th:value = "${placement.id}"
+              />
+            </select>
+          </div>
+
+          <div class = "form-group">
+            <label for = "placeKindId"
+                   th:text = "#{placeKindNameLabel}"></label>
+            <select class = "form-control"
+                    id = "placeKindId"
+                    name = "placeKindId">
+              <option th:each = "placeKind : ${placeKinds}"
+                      th:value = "${placeKind.id}"
+                      th:field = "*{placeKindId}"
+                      th:text = "${placeKind.name}"
+              />
+            </select>
+          </div>
+
+          <div class = "form-group">
+            <label for = "row"
+                   th:text = "#{placeRowLabel}"></label>
+            <input type = "number"
+                   name = "row"
+                   id = "row"
+                   class = "form-control"
+                   th:min = "${@environment.getProperty('place-num-min')}"
+                   th:step = "${@environment.getProperty('place-num-step')}"
+                   th:placeholder = "#{placeRowPlaceholder}"
+                   th:title = "#{placeRowTitle(${@environment.getProperty('place-num-step')})}"
+                   th:value = "${row}"
+            />
+          </div>
+
+          <div class = "form-group">
+            <label for = "num"
+                   th:text = "#{placeNumLabel}"></label>
+            <input required
+                   type = "number"
+                   name = "num"
+                   id = "num"
+                   class = "form-control"
+                   th:min = "${@environment.getProperty('place-num-min')}"
+                   th:step = "${@environment.getProperty('place-num-step')}"
+                   th:placeholder = "#{placeNumPlaceholder}"
+                   th:title = "#{placeNumTitle(${@environment.getProperty('place-num-step')})}"
+                   th:value = "${num}"
+            />
+          </div>
+
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    type = "submit"
+                    th:text = "#{buttonSave}">
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

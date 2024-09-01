@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageUpdatePlaceTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageUpdatePlaceTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageUpdatePlaceTitle}"></h1>
+      <div class = "card-body">
+        <form th:action = "@{/update_place}"
+              th:object = "${place}"
+              method = "POST">
+
+          <div class = "form-group">
+            <label for = "placementId"
+                   th:text = "#{placementNameLabel}"></label>
+            <select class = "form-control"
+                    id = "placementId"
+                    name = "placementId">
+              <option th:each = "placement : ${placements}"
+                      th:text = "${placement.name}"
+                      th:field = "*{placementId}"
+                      th:value = "${placement.id}"
+              />
+            </select>
+          </div>
+
+          <div class = "form-group">
+            <label th:text = "#{placeKindNameLabel}"></label>
+            <select class = "form-control"
+                    id = "placeKindId"
+                    name = "placeKindId">
+              <option th:each = "placeKind : ${placeKinds}"
+                      th:value = "${placeKind.id}"
+                      th:field = "*{placeKindId}"
+                      th:text = "${placeKind.name}"
+              />
+            </select>
+          </div>
+
+          <div class = "form-group">
+            <label for = "row" th:text = "#{placeRowLabel}"></label>
+            <input class = "form-control"
+                   type = "number"
+                   name = "row"
+                   id = "row"
+                   th:step = "#{place-num-step}"
+                   th:min = "#{place-num-min}"
+                   th:placeholder = "#{placeRowPlaceholder}"
+                   th:title = "#{placeRowTitle(#{place-num-step})}"
+                   th:value = "${row}"
+            />
+          </div>
+
+          <div class = "form-group">
+            <label for = "num"
+                   th:text = "#{placeNumLabel}"></label>
+            <input class = "form-control"
+                   required
+                   type = "number"
+                   name = "num"
+                   id = "num"
+                   th:step = "#{place-num-step}"
+                   th:min = "#{place-num-min}"
+                   th:placeholder = "#{placeNumPlaceholder}"
+                   th:title = "#{placeNumTitle(#{place-num-step})}"
+                   th:value = "${num}"
+            />
+          </div>
+
+          <div class = "box-footer">
+            <input type = "hidden"
+                   name = "placeId"
+                   th:value = "${placeId}"/>
+            <button type = "submit"
+                    class = "btn btn-primary"
+                    th:text = "#{buttonSaveChanges}">
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

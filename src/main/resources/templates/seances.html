@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageSeancesTitle})}"></head>
+
+<body style = "background-image: url('/images/back.png');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: 100% 100%;">
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageSeancesTitle},
+                                                      current_dropitem_no = '1')}">
+</div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <h1 class = "text-center m-3 mb-4  d-none"
+      th:text = "#{pageSeancesTitle}">
+  </h1>
+
+  <th:block th:if = "${session.isAdminRole}">
+    <a class = "btn btn-primary float-right m-3 ml-2"
+       th:href = "@{/create_seance_form}"
+       th:text = "#{buttonCreateNewSeance}">
+    </a>
+  </th:block>
+
+  <th:block th:if = "${session.isClientRole}">
+    <th:block th:if = "${purchasedValidTicketsCount > 0}">
+      <div class = "w-100 badge table-info p-2 mb-2 d-flex justify-content-center fles-wrap flex-sm-grow-0 flex-grow-1">
+        <div class = "h5 text-wrap my-auto mr-2"
+             th:text = "#{phraseYouHaveActualTickets}">
+        </div>
+        <!-- ToDo 25.05.2023 06:22 При переходе сбрасываем на "?ticketsShowActualOnly=true" -->
+        <a class = "btn btn-primary my-auto"
+           href = "/client_tickets?ticketsShowActualOnly=true">
+          <span class = "my-auto" th:text = "#{buttonToView}">
+          </span>
+          <span class = "badge badge-light"
+                th:text = "${purchasedValidTicketsCount}">
+          </span>
+        </a>
+      </div>
+    </th:block>
+  </th:block>
+
+
+  <!-- SORTING -->
+  <div class = "d-flex justify-content-around flex-wrap w-100 my-1">
+    <div class = "my-auto h5 mx-1 text-light"
+         th:text = "#{phraseSortSeancesBy}"></div>
+
+    <div th:replace = "~{fragments/buttons :: sort_buttons(sort_param_name = 'beginTime',
+                                                          current_sorting_type = ${seancesSortType},
+                                                          sort_type_name = 'seancesSortType',
+                                                          off_value = 'off',
+                                                          to_url = '/',
+                                                          sort_text = #{phraseByDateAndTime})}"></div>
+
+    <div th:replace = "~{fragments/buttons :: sort_buttons(sort_param_name = 'film.name',
+                                                          current_sorting_type = ${seancesSortType},
+                                                          sort_type_name = 'seancesSortType',
+                                                          off_value = 'off',
+                                                          to_url = '/',
+                                                          sort_text = #{phraseByFilmName})}"></div>
+
+    <div th:replace = "~{fragments/buttons :: sort_buttons(sort_param_name = 'freeTicketsCount',
+                                                          current_sorting_type = ${seancesSortType},
+                                                          sort_type_name = 'seancesSortType',
+                                                          off_value = 'off',
+                                                          to_url = '/',
+                                                          sort_text = #{phraseByNumOfFreePlaces})}"></div>
+
+
+    <div th:replace = "~{fragments/buttons :: swith_button(siwtch_param_name = 'seancesShowActualOnly',
+                                                          current_switch_state = ${seancesShowActualOnly},
+                                                          to_url = '/',
+                                                          switch_text = #{phraseActualOnly})}"></div>
+
+    <div th:replace = "~{fragments/buttons :: swith_button(siwtch_param_name = 'seancesShowWithFreePlacesOnly',
+                                                          current_switch_state = ${seancesShowWithFreePlacesOnly},
+                                                          to_url = '/',
+                                                          switch_text = #{phraseWithFreePlacesOnly})}"></div>
+
+
+    <div th:replace = "~{fragments/buttons :: date_button(date_param_name = 'seancesShowForDate',
+                                                         current_date = ${seancesShowForDate},
+                                                         min_date = ${seancesShowMinDate},
+                                                         off_value = 'off',
+                                                         to_url = '/',
+                                                         date_text = #{phraseOfDay})}"></div>
+
+
+  </div>
+  <!-- Table of seances -->
+  <table class = "table table-rounded-rows table-sm">
+    <!-- style = "background-color:hsla(0, 0%, 100%, 95%);"> -->
+    <tbody>
+    <tr th:each = "seance: ${seances}">
+      <!-- Film image -->
+      <td class = "w-15 td-transparent table-first-child p-15">
+        <!-- w-35 -->
+        <img class = "w-100 rounded border border-white"
+             th:alt = "${filmServ.findFilmById(seance.filmId).imageName}"
+             th:src = "@{'/'+${@environment.getProperty('app.cinemafiles-dir-name')}+'/'+${filmServ.findFilmById(seance.filmId).getImageName()}}"
+        />
+      </td>
+      <!-- Seance info cell -->
+      <td class = "w-65 p-3 td-transparent">
+        <!-- w-40 -->
+        <!-- Film name -->
+        <div class = "text-center h3 mx-1 mb-3"
+             th:text = "${filmServ.findFilmById(seance.filmId).name}">
+        </div>
+        <!-- Seance summary -->
+        <div class = "">
+          <table class = "table-not-striped table-borderless table-sm text-left mx-auto">
+            <tr>
+              <td class = "h5 p-1 pr-2"
+                  th:text = "|#{seanceDataText}:|"></td>
+              <td class = "align-bottom h5 text-right p-1 pl-2"
+                  th:text = "${#dates.format(seance.beginTime,'dd.MM.yy')}"></td>
+            </tr>
+            <tr>
+              <td class = "h5 p-1 pr-2 pb-3"
+                  th:text = "|#{seanceStartTimeText}:|"></td>
+              <td class = "align-bottom h5 text-right p-1 pl-2 pb-3"
+                  th:text = "${#dates.format(seance.beginTime, 'HH:mm')}"></td>
+            </tr>
+            <tr>
+              <td class = "h5 p-1 pr-2 pb-3"
+                  th:text = "|#{seanceNumOfFreeTicketsText}:|"></td>
+              <td class = "align-bottom h5 text-right p-1 pl-2 pb-3"
+                  th:text = "${ticketServ.findTicketsBySeanceIdAndPlaceStatus(seance.id, freePlaceStatus).size()}"></td>
+            </tr>
+            <tr>
+              <td class = "h5 p-1 pr-2"
+                  th:text = "|#{seanceBasePriceText}:|"></td>
+              <td class = "align-bottom h5 text-right p-1 pl-2"
+                  th:insert = "~{fragments/currency_format :: currency_format(${seance.basePrice})}"></td>
+            </tr>
+            <!--  th:text = "${@environment.getProperty('price-step', Long) < 1 ? #numbers.formatDecimal(seance.basePrice, 1, 'NONE', 2, 'DEFAULT') : #numbers.formatDecimal(seance.basePrice, 1, 'NONE', 0, 'DEFAULT')}"></td>
+                -->
+          </table>
+        </div>
+      </td>
+      <!-- Actions -->
+      <td class = "w-auto text-center align-top pt-5 pr-3 pb-5 td-transparent table-last-child">
+        <form class = "d-flex flex-column mx-auto w-90"
+              th:action = "@{/more_info}"
+              method = "GET">
+          <button class = "btn btn-default btn-block m-1" style="box-shadow: 0px 0px 2px 2px rgb(0,0,0);"
+                  type = "submit"
+                  name = "seanceId"
+                  th:value = "${seance.id}"
+                  th:text = "#{buttonMoreInfo}"
+                  th:formaction = "@{/more_info}"
+                  th:formmethod = "GET"
+          />
+
+          <th:block th:if = "${loggedUser != null}">
+            <th:block th:if = "${session.isClientRole && seance.isActualBeginTime()}">
+              <button class = "btn btn-default btn-block m-1 mt-3" style="box-shadow: 0px 0px 2px 2px rgb(0,0,0);"
+                      type = "submit"
+                      name = "seanceId"
+                      th:formaction = "@{/buy_ticket_form}"
+                      th:formmethod = "GET"
+                      th:value = "${seance.id}"
+                      th:text = "#{phraseGoToByTicket}"
+              />
+            </th:block>
+          </th:block>
+
+
+          <th:block th:if = "${loggedUser != null}">
+            <th:block th:if = "${session.isAdminRole}">
+              <!-- <input type="hidden"> -->
+              <button class = "btn btn-default btn-block m-1" style="box-shadow: 0px 0px 2px 2px rgb(0,0,0);"
+                      type = "submit"
+                      name = "seanceId"
+                      th:text = "#{buttonEdit}"
+                      th:formaction = "@{/update_seance_form}"
+                      th:formmethod = "GET"
+                      th:value = "${seance.id}"
+              />
+
+              <button class = "btn btn-default btn-block m-1" style="box-shadow: 0px 0px 2px 2px rgb(0, 0, 0);"
+                      type = "submit"
+                      name = "seanceId"
+                      th:text = "#{buttonStatistics}"
+                      th:formaction = "@{/show_seance_statistics}"
+                      th:formmethod = "GET"
+                      th:value = "${seance.id}"
+              />
+
+              <button class = "btn btn-danger btn-block m-1" style="box-shadow: 0px 0px 2px 2px rgb(125, 0, 0);"
+                      type = "submit"
+                      name = "seanceId"
+                      th:text = "#{buttonDelete}"
+                      th:formaction = "@{/delete_seance}"
+                      th:formmethod = "POST"
+                      th:value = "${seance.id}"
+              />
+            </th:block>
+          </th:block>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+
+  </table>
+
+</div>
+</body>
+
+<script th:inline = "javascript">
+
+    document.addEventListener("DOMContentLoaded", function (event) {
+        var user_was_logged = (localStorage.getItem('user_logged') != null);
+        var user_logged = ([[${session.loggedUser}]] != null);
+        var need_restore = [[${(error == null) || (error == '')}]];
+        if (user_logged !== user_was_logged) {
+            localStorage.removeItem('scroll_pos_seances');
+            localStorage.removeItem('scroll_pos_client_tickets');
+            localStorage.removeItem('scroll_pos_buy_ticket_form');
+        } else {
+            if (need_restore) {
+                var scroll_pos_seances = localStorage.getItem('scroll_pos_seances');
+                if (scroll_pos_seances) window.scrollTo(0, scroll_pos_seances);
+            }
+        }
+    });
+
+    window.onbeforeunload = function (e) {
+        var user_logged = ([[${session.loggedUser}]] != null);
+        if (user_logged) localStorage.setItem('user_logged', user_logged)
+        else localStorage.removeItem('user_logged');
+        localStorage.setItem('scroll_pos_seances', window.scrollY);
+    };
+</script>
+
+</html>

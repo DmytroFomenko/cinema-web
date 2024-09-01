@@ -1,0 +1,217 @@
+<!-- ******************************* -->
+<!-- * Common upper navigation bar * -->
+<!-- ******************************* -->
+<th:block th:fragment = "navbar_common(hide_login_logout,
+                                        page_title,
+                                        current_dropitem_no)"
+          th:with = "userIsLogged = ${not #strings.isEmpty(session.loggedUser)},
+           isAdminRole = ${#strings.isEmpty(session.isAdminRole) ? false : session.isAdminRole},
+           isClientRole = ${#strings.isEmpty(session.isClientRole) ? false : session.isClientRole}">
+
+  <nav class = "navbar navbar-expand-md bg-dark navbar-dark sticky-top mb-2">
+    <div class = "container-lg">
+
+      <!-- Brand links -->
+      <a class = "d-flex navbar-brand mb-0 h1"
+         th:href = "@{/}">
+        <th:block th:if = "${current_dropitem_no == '1'}">
+          <svg class = "bi bi-house-door text-white mr-2 my-auto"
+               xmlns = "http://www.w3.org/2000/svg"
+               width = "32"
+               height = "32"
+               fill = "currentColor"
+               viewBox = "0 0 16 16">
+            <path
+                d = "M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146ZM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5Z"/>
+          </svg>
+          <div class = "my-auto"
+               th:text = "#{wordPageMain}"></div>
+        </th:block>
+        <th:block th:if = "${current_dropitem_no != '1'}">
+          <svg class = "bi bi-house-door text-white mr-2 my-auto"
+               xmlns = "http://www.w3.org/2000/svg"
+               width = "32"
+               height = "32"
+               fill = "currentColor"
+               viewBox = "0 0 16 16">
+            <path
+                d = "M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708L7.293 1.5Z"/>
+            <path
+                d = "M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.354-5.854 1.5 1.5a.5.5 0 0 1-.708.708L13 11.707V14.5a.5.5 0 1 1-1 0v-2.793l-.646.647a.5.5 0 0 1-.708-.707l1.5-1.5a.5.5 0 0 1 .708 0Z"/>
+          </svg>
+          <div class = "my-auto"
+               th:text = "#{linkTextToMainPage}"></div>
+        </th:block>
+      </a>
+
+      <!-- Navbar links -->
+
+      <!-- Client links -->
+      <th:block th:if = "${userIsLogged && isClientRole}">
+        <!-- Something -->
+        <!-- Dropdown menu -->
+        <ul class = "navbar-nav mr-auto">
+          <li class = "nav-item dropright">
+            <!-- Menu toggler -->
+            <a class = "nav-link dropdown-toggle"
+               href = "#"
+               id = "navbarDropdownMenu1"
+               data-toggle = "dropdown"
+               aria-haspopup = "true"
+               aria-expanded = "false">
+              <span class = "navbar-toggler-icon"></span>
+            </a>
+            <!-- Admin menu items -->
+            <div class = "dropdown-menu" aria-labelledby = "navbarDropdownMenu1">
+              <!-- <div class = "dropdown-divider"></div> -->
+              <!-- <h6 class = "dropdown-header">Dropdown header</h6> -->
+
+              <a th:with = "order_no = '1'"
+                 th:class = "|dropdown-item order-${order_no} ${current_dropitem_no == order_no ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != order_no} ? '/' : '#'}"
+                 th:text = "#{buttonSeances}">
+              </a>
+              <a th:with = "order_no = '2'"
+                 th:class = "|dropdown-item order-${order_no} ${current_dropitem_no == order_no ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != order_no} ? '/client_tickets' : '#'}"
+                 th:text = "#{phraseYourTickets}">
+              </a>
+            </div>
+          </li>
+        </ul>
+      </th:block>
+
+      <!-- Admin links -->
+      <th:block th:if = "${userIsLogged && isAdminRole}">
+        <!-- Dropdown menu -->
+        <ul class = "navbar-nav mr-auto">
+          <li class = "nav-item dropright">
+            <!-- Menu toggler -->
+            <a class = "nav-link dropdown-toggle"
+               href = "#"
+               id = "navbarDropdownMenu2"
+               data-toggle = "dropdown"
+               aria-haspopup = "true"
+               aria-expanded = "false"
+               aria-label = "dopDownMenu">
+              <span class = "navbar-toggler-icon"></span>
+            </a>
+            <!-- Admin menu items -->
+            <div class = "dropdown-menu" aria-labelledby = "navbarDropdownMenu2">
+              <!-- <div class = "dropdown-divider"></div> -->
+              <!-- <h6 class = "dropdown-header">Dropdown header</h6> -->
+
+              <a th:with = "order_no = '1'"
+                 th:class = "|dropdown-item order-${order_no} ${current_dropitem_no == order_no ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != order_no} ? '/' : '#'}"
+                 th:text = "#{buttonSeances}">
+              </a>
+              <!-- <a th:with = "order_no = '2'" -->
+              <!--    th:class = "|dropdown-item order-${order_no} ${current_dropitem_no == order_no ? 'text-white bg-info disabled' : ''}|" -->
+              <!--    th:href = "@{${current_dropitem_no != order_no} ? '/show_seance_statistics' : '#'}" -->
+              <!--    th:text = "#{pageSeanceStatisticsTitle}"> -->
+              <!-- </a> -->
+              <a th:with = "orderNo = '3'"
+                 th:class = "|dropdown-item order-${orderNo} ${current_dropitem_no == orderNo ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != orderNo} ? '/films' : '#'}"
+                 th:text = "#{buttonFilms}">
+              </a>
+              <a th:with = "orderNo = '4'"
+                 th:class = "|dropdown-item order-${orderNo} ${current_dropitem_no == orderNo ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != orderNo} ? '/additions' : '#'}"
+                 th:text = "#{buttonAdditions}">
+              </a>
+              <a th:with = "orderNo = '5'"
+                 th:class = "|dropdown-item order-${orderNo} ${current_dropitem_no == orderNo ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != orderNo} ? '/placeKinds' : '#'}"
+                 th:text = "#{buttonPlaceKinds}">
+              </a>
+              <a th:with = "orderNo = '6'"
+                 th:class = "|dropdown-item order-${orderNo} ${current_dropitem_no == orderNo ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != orderNo} ? '/placements' : '#'}"
+                 th:text = "#{buttonPlacements}">
+              </a>
+              <a th:with = "orderNo = '7'"
+                 th:class = "|dropdown-item order-${orderNo} ${current_dropitem_no == orderNo ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != orderNo} ? '/places' : '#'}"
+                 th:text = "#{buttonPlaces}">
+              </a>
+              <a th:with = "orderNo = '8'"
+                 th:class = "|dropdown-item order-${orderNo} ${current_dropitem_no == orderNo ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != orderNo} ? '/billToPays' : '#'}"
+                 th:text = "#{buttonBillToPays}">
+              </a>
+              <a th:with = "orderNo = '9'"
+                 th:class = "|dropdown-item order-${orderNo} ${current_dropitem_no == orderNo ? 'text-white bg-info disabled' : ''}|"
+                 th:href = "@{${current_dropitem_no != orderNo} ? '/statistics_films' : '#'}"
+                 th:text = "#{buttonStatisticsFilms}">
+              </a>
+            </div>
+          </li>
+        </ul>
+      </th:block>
+
+      <!-- Page title -->
+      <div class = "d-flex vw-100 h1 align-items-baseline justify-content-center text-white mb-2 m-0">
+               <span class = "text-center w-100"
+                     th:text = "${page_title}"></span>
+      </div>
+
+      <!-- Hiddable login / logout links -->
+      <th:block th:if = "${hide_login_logout != true}">
+        <th:block th:if = "${userIsLogged}">
+          <!-- Logout links -->
+          <div class = "d-inline-flex align-items-baseline justify-content-center ml-auto flex-wrap flex-md-nowrap">
+            <a class = "nav-link text-white mx-auto"
+               th:href = "@{/}"
+               th:text = "${session.loggedUser.nickname}">
+            </a>
+
+            <a class = "d-flex btn align-items-middle btn-primary ml-0 my-1 h5"
+               th:href = "@{/logout_user}">
+              <div class = "my-auto"
+                   th:text = "#{buttonToLogout}">
+              </div>
+              <!-- Icon Logout -->
+              <svg class = "bi bi-box-arrow-right text-white ml-2 my-auto"
+                   xmlns = "http://www.w3.org/2000/svg"
+                   width = "24"
+                   height = "24"
+                   fill = "currentColor"
+                   viewBox = "0 0 16 16">
+                <path fill-rule = "evenodd"
+                      d = "M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                <path fill-rule = "evenodd"
+                      d = "M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+              </svg>
+            </a>
+          </div>
+        </th:block>
+
+        <!-- Login link -->
+        <th:block th:if = "${not userIsLogged}">
+          <a class = "d-flex btn btn-primary align-items-middle ml-auto my-1"
+             th:href = "@{/login_user_form}">
+            <div class = "my-auto"
+                 th:text = "#{buttonToLogin}">
+            </div>
+            <svg class = "bi bi-box-arrow-right text-white ml-1 my-auto"
+                 xmlns = "http://www.w3.org/2000/svg"
+                 width = "24"
+                 height = "24"
+                 fill = "currentColor"
+                 viewBox = "0 0 16 16">
+              <path fill-rule = "evenodd"
+                    d = "M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
+              <path fill-rule = "evenodd"
+                    d = "M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+            </svg>
+          </a>
+        </th:block>
+      </th:block>
+
+    </div>
+  </nav>
+
+</th:block>
+

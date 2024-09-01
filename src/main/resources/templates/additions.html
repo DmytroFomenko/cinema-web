@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageAdditionsTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageAdditionsTitle},
+                                                      current_dropitem_no = '4')}"></div>
+
+<div class = "container-lg">
+
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <h1 class = "text-center m-3 mb-4 d-none"
+      th:text = "#{pageAdditionsTitle}"></h1>
+
+  <form method = "GET"
+        th:action = "@{/create_addition_form}">
+    <button class = "btn btn-primary float-right m-3"
+            type = "submit"
+            th:text = "#{buttonCreateNewAddition}"
+    />
+  </form>
+
+  <!-- Additions table -->
+  <table class = "table table-sm table-striped table-bordered">
+    <thead class = "table-info text-center">
+    <!-- Header of table -->
+    <tr>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordAddition}">
+      </th>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "|#{wordPreCurrency}#{wordPrice}, #{wordPostCurrency}|">
+      </th>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordAvailability}">
+      </th>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordActions}">
+      </th>
+    </tr>
+    <!-- Addition datas -->
+    </thead>
+    <tbody>
+    <tr th:each = "addition: ${additions}"
+        th:style = "|${addition.available == true ? '' : 'color: lightgray'}|">
+      <td class = "text-left  align-middle h6 p-1 pl-3"
+          th:text = "${addition.name}"/>
+      <td class = "text-center  align-middle h6 p-1"
+          th:insert="~{fragments/currency_format :: currency_format(${addition.price})}">
+      </td>
+      <!-- Availability -->
+      <td class = "text-center  align-middle h4 p-1"
+          th:text = "${addition.available == true ? '✔' : '➖'}"
+      />
+      <td class = "text-center align-top p-0">
+        <!-- Action buttons -->
+        <form class = "d-inline-flex flex-wrap justify-content-center align-content-center align-items-center w-100"
+              method = "GET"
+              th:action = "@{/update_addition_form}">
+          <button class = "btn btn-primary m-1 flex-grow-1"
+                  type = "submit"
+                  name = "additionId"
+                  th:formaction = "@{/update_addition_form}"
+                  th:formmethod = "GET"
+                  th:text = "#{buttonEdit}"
+                  th:value = "${addition.id}"
+          />
+          <button class = "btn btn-danger m-1 flex-grow-1"
+                  type = "submit"
+                  name = "additionId"
+                  th:formaction = "@{/delete_addition}"
+                  th:formmethod = "POST"
+                  th:text = "#{buttonDelete}"
+                  th:value = "${addition.id}"
+          />
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>

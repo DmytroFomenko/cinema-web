@@ -1,0 +1,38 @@
+#version: '3.9'
+services:
+  mysqldb:
+    container_name: MySQLdb
+    image: mysql:8.0.31
+    restart: always
+    env_file: ./.env
+    ports:
+      - ${MYSQLDB_DOCKER_PORT1}:${MYSQLDB_PORT1}
+      - ${MYSQLDB_DOCKER_PORT2}:${MYSQLDB_PORT2}
+    environment:
+      - MYSQL_DATABASE=${MYSQLDB_DATABASE}
+      - MYSQL_PASSWORD=${MYSQLDB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
+    volumes:
+      - ./db/cinema.sql:/docker-entrypoint-initdb.d/cinema.sql
+
+
+  webapp:
+    container_name: CinemaWebApp
+    image: eclipse-temurin:18.0.2.1_1-jdk
+#    depends_on:
+#      - mysqldb
+    build:
+      context: .
+    working_dir: /webapp
+    ports:
+      - ${WEBAPP_DOCKER_PORT}:${WEBAPP_PORT}
+    env_file: ./.env
+    environment:
+      - MYSQL_HOST=host.docker.internal
+      - DOCKER_CONTAINER=true
+#      - MYSQL_HOST=mysqldb
+      #172.17.0.1
+    entrypoint: java -jar /webapp/cinema.jar
+    volumes:
+      - ./target/Cinema-0.0.1-SNAPSHOT.jar:/webapp/cinema.jar
+      - ./cinemafiles:/cinemafiles

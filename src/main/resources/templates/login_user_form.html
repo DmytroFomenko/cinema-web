@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageLoginTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = true,
+                                                      page_title = #{pageLoginTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+<div class = "container-lg">
+
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "container mb-4"
+       style = "text-align: right; margin-right: 20px">
+    <a th:href = "@{/signup_admin_form}"
+       th:text = "#{linkTextSignUpAsAdmin}"> </a>
+  </div>
+
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageLoginTitle}"></h1>
+      <div class = "card-body">
+        <form th:action = "@{/login_user}"
+              th:object = "${loginData}"
+              method = "POST">
+          <div class = "form-group">
+            <label for = "nickname"
+                   th:text = "#{nicknameLabel}">
+            </label>
+            <input class = "form-control"
+                   required
+                   type = "text"
+                   id = "nickname"
+                   name = "nickname"
+                   th:pattern = "${@environment.getProperty('nickname-login-pattern')}"
+                   th:placeholder = "#{nicknamePlaceholder}"
+                   th:value = "*{nickname}"
+                   th:title = "#{nicknameTitle(${@environment.getProperty('nickname-min-length')},
+                                                      ${@environment.getProperty('nickname-max-length')})}"
+            />
+          </div>
+
+          <div class = "form-group">
+            <label for = "password"
+                   th:text = "#{passwordLabel}"> </label>
+            <input class = "form-control"
+                   required
+                   type = "password"
+                   id = "password"
+                   name = "password"
+                   th:pattern = "${@environment.getProperty('password-login-pattern')}"
+                   th:placeholder = "#{passwordPlaceholder}"
+                   th:title = "#{passwordLoginTitle}"
+                   value = ""
+            />
+          </div>
+
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    type = "submit"
+                    th:text = "#{buttonToLogin}"/>
+          </div>
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class = "col-lg-6 col-md-6 col-sm-6 d-flex justify-content-between align-items-center mb-3 mt-5 mx-auto">
+    <div class = "m-0 p-0 mr-3"
+         th:text = "#{phraseDontHaveAccount}">
+    </div>
+    <a class = "btn btn-primary text-nowrap"
+       th:href = "@{/signup_client_form}"
+       th:text = "#{buttonSignUp}">
+    </a>
+  </div>
+  <div class = "col-lg-6 col-md-6 col-sm-6 d-flex justify-content-between align-items-center mt-3 mb-5 mx-auto">
+    <div class = "m-0 p-0 mr-3"
+         th:text = "#{phraseForgotAccountAccess}">
+    </div>
+    <a class = "btn btn-secondary text-nowrap"
+       th:href = "@{/recover_access_form}"
+       th:text = "#{buttonRecoverAccountAccess}">
+    </a>
+  </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageSeancesTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageSeanceStatisticsTitle},
+                                                      current_dropitem_no = '2')}"></div>
+
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <div class = "d-flex w-100 mt-4 mb-3">
+    <form method = "GET" th:action = "@{/show_seance_statistics}">
+      <button class = "btn btn-secondary"
+              type = "submit"
+              name = "seanceId"
+              th:formaction = "@{/show_seance_statistics}"
+              th:value = "${seanceId}"
+              th:text = "#{phraseOfSeance}">
+      </button>
+      <button class = "btn btn-primary"
+              type = "submit"
+              name = "seanceId"
+              th:formaction = "@{/show_day_statistics}"
+              th:value = "${seanceId}"
+              th:text = "#{phraseOfDay}">
+      </button>
+    </form>
+  </div>
+
+  <h2 class = "text-center m-3 mb-4">
+    <th:block th:text = "#{phraseSeancesStatisticsOf}"></th:block>
+    <th:block th:text = "${#dates.format(daySeances.get(0).getBeginTime(), 'dd.MM.yyyy')}"></th:block>
+  </h2>
+  <h5 class = "m-3 mb-4">
+    <th:block th:text = "#{phraseSummaryProfit} + ':'"></th:block>
+    <th:block
+        th:text = "${#numbers.formatDecimal(totalPrice, 1, 'NONE', 0, 'DEFAULT')} + #{wordPostCurrency}"></th:block>
+  </h5>
+  <h5 class = "m-3 mb-4">
+    <th:block th:text = "#{phraseSeancesAtDay} + ':'"></th:block>
+    <th:block th:text = "${numOfSeances}"></th:block>
+  </h5>
+  <h5 class = "m-3 mb-4">
+    <th:block th:text = "#{phraseTicketsSold} + ':'"></th:block>
+    <th:block th:if = "${numOfBoughtTickets != null}">
+      <th:block th:text = "${numOfBoughtTickets}"></th:block>
+    </th:block>
+    <th:block th:if = "${numOfBoughtTickets == null}">
+      0
+    </th:block>
+  </h5>
+
+
+  <!-- ******************************************* -->
+  <!-- * Tickets table                           * -->
+  <!-- ******************************************* -->
+  <div class = "w-100 mt-4 mb-3"
+       th:if = "${boughtTickets != null}">
+    <!-- Table of tickets -->
+    <table class = "table table-bordered table-sm">
+      <thead class = "table-info text-center">
+        <tr>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{wordTime}">
+          </th>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{wordFilm}">
+          </th>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{wordPlace}">
+          </th>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{wordPlaceKind}">
+          </th>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{wordSeancePrice}">
+          </th>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{phraseAdditions}">
+          </th>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{phraseTotalPrice}">
+          </th>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{wordStatus}">
+          </th>
+          <th class = "text-center  align-middle h5"
+              th:text = "#{phraseTicketCode}">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each = "tick : ${boughtTickets}"
+            th:class = "${#dates.createNow().after(seanceServ.findSeanceById(tick.seanceId).beginTime)} == true  ? 'table-secondary' : _"
+            th:with = "x = ${@calculator.resetSum()}">
+
+          <td class = "text-center  align-middle h6"
+              th:text = "${#dates.format(seanceServ.findSeanceById(tick.seanceId).beginTime, 'HH:mm / dd.MM.yy')}">
+          </td>
+          <td class = "text-center  align-middle h6"
+              th:text = "${filmServ.findFilmById(seanceServ.findSeanceById(tick.seanceId).filmId).name}">
+          </td>
+          <td class = "text-center  align-middle h6"
+              th:text = "${placeServ.findPlaceById(tick.placeId).number}">
+          </td>
+          <td class = "align-middle h6">
+            <table class = "w-100 table-not-striped table-borderless table-sm">
+              <tr>
+                <td class = "text-left align-middle p-1"
+                    th:text = "${placeKindServ.findPlaceKindById(placeServ.findPlaceById(tick.placeId).placeKindId).name}">
+                </td>
+                <td class = "text-right align-middle p-1"
+                    th:insert = "~{fragments/currency_format :: currency_format(${@calculator.addSum(placeKindServ.findPlaceKindById(placeServ.findPlaceById(tick.placeId).placeKindId).addPrice)})}">
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class = "text-center  align-middle h6"
+              th:insert = "~{fragments/currency_format :: currency_format(${@calculator.addSum(seanceServ.findSeanceById(tick.seanceId).getBasePrice())})}">
+          </td>
+          <td class = "text-center align-middle h6">
+
+            <table class = "w-100 table-not-striped table-borderless table-sm">
+              <th:block th:each = "add : ${ticketAdditionService.findTicketAdditionsByTicketId(tick.getId())}">
+                <tr th:style = "${not addStat.first} ? 'border-top: 1px solid #b3b7bb;'">
+                  <td class = "text-left align-middle p-1"
+                      th:text = "${additionServ.findAdditionById(add.getAdditionId()).name}">
+                  </td>
+                  <td class = "text-right align-middle p-1"
+                      th:insert = "~{fragments/currency_format :: currency_format(${@calculator.addSum(additionServ.findAdditionById(add.getAdditionId()).price)})}">
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+
+          </td>
+          <td class = "text-center  align-middle h6"
+              th:insert = "~{fragments/currency_format :: currency_format(${@calculator.stopSum()})}">
+          </td>
+          <td class = "text-center  align-middle h6"
+              th:text = "${#dates.createNow().after(seanceServ.findSeanceById(tick.seanceId).beginTime)} == true  ? #{wordInvalid} : #{wordValid}">
+          </td>
+          <td class = "text-center  align-middle h6"
+              th:text = "${tick.code}">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

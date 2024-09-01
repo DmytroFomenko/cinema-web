@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageSeancesTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageClientTickets},
+                                                      current_dropitem_no = '2')}"></div>
+
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <h1 class = "text-center m-3 mb-4 d-none"
+      th:text = "#{pageClientTickets}">
+  </h1>
+
+
+  <!-- SORTING -->
+  <div class = "d-flex justify-content-around flex-wrap w-100 my-1">
+    <div class = "my-auto h5 mx-1 text-dark"
+         th:text = "#{phraseSortTicketsBy}">
+    </div>
+
+
+    <div th:replace = "~{fragments/buttons :: sort_buttons(sort_param_name = 'seance.beginTime',
+                                                          current_sorting_type = ${ticketsSortType},
+                                                          sort_type_name = 'ticketsSortType',
+                                                          off_value = 'off',
+                                                          to_url = '/client_tickets',
+                                                          sort_text = #{phraseBySeanceDateAndTime})}">
+    </div>
+
+    <div th:replace = "~{fragments/buttons :: sort_buttons(sort_param_name = 'seance.film.name',
+                                                          current_sorting_type = ${ticketsSortType},
+                                                          sort_type_name = 'ticketsSortType',
+                                                          off_value = 'off',
+                                                          to_url = '/client_tickets',
+                                                          sort_text = #{phraseByFilmName})}">
+    </div>
+
+    <div th:replace = "~{fragments/buttons :: sort_buttons(sort_param_name = 'place.number',
+                                                          current_sorting_type = ${ticketsSortType},
+                                                          sort_type_name = 'ticketsSortType',
+                                                          off_value = 'off',
+                                                          to_url = '/client_tickets',
+                                                          sort_text = #{phraseByPlace})}">
+    </div>
+
+    <div th:replace = "~{fragments/buttons :: swith_button(siwtch_param_name = 'ticketsShowActualOnly',
+                                                          current_switch_state = ${ticketsShowActualOnly},
+                                                          to_url = '/client_tickets',
+                                                          switch_text = #{phraseValidOnly})}">
+    </div>
+    <!-- ${seancesShowActualOnly} -->
+
+    <div th:replace = "~{fragments/buttons :: date_button(date_param_name = 'ticketsShowForDate',
+                                                         current_date = ${ticketsShowForDate},
+                                                         min_date = ${ticketsShowMinDate},
+                                                         off_value = 'off',
+                                                         to_url = '/client_tickets',
+                                                         date_text = #{phraseOfDay})}">
+    </div>
+  </div>
+  <!-- ${ticketsShowForDate} -->
+
+  <th:block th:if = "${boughtTickets == null}">
+    <div class = "w-100 p-3 rounded border border-warning h3 my-5 text-center"
+         th:text = "${ticketsShowForDate != 'off'} ? #{phraseNoSuchTickets} : #{phraseNoTickets}">
+    </div>
+  </th:block>
+
+  <!-- ******************************************* -->
+  <!-- * Tickets table                           * -->
+  <!-- ******************************************* -->
+  <div class = "w-100 mb-3"
+       th:if = "${boughtTickets != null}">
+    <!-- Table of tickets -->
+    <table class = "table table-bordered table-sm">
+      <thead class = "table-info text-center">
+      <tr>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordTime}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordFilm}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordPlace}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordPlaceKind}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordSeancePrice}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{phraseAdditions}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{phraseTotalPrice}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordStatus}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{phraseTicketCode}">
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each = "tick : ${boughtTickets}"
+          th:class = "${#dates.createNow().after(seanceServ.findSeanceById(tick.seanceId).beginTime)} == true  ? 'table-secondary' : _"
+          th:with = "x = ${@calculator.resetSum()}">
+
+        <td class = "text-center  align-middle h6"
+            th:text = "${#dates.format(seanceServ.findSeanceById(tick.seanceId).beginTime, 'HH:mm / dd.MM.yy')}">
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:text = "${filmServ.findFilmById(seanceServ.findSeanceById(tick.seanceId).filmId).name}">
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:text = "${placeServ.findPlaceById(tick.placeId).number}">
+        </td>
+        <td class = "align-middle h6">
+          <table class = "w-100 table-not-striped table-borderless table-sm">
+            <tr>
+              <td class = "text-left align-middle p-1"
+                  th:text = "${placeKindServ.findPlaceKindById(placeServ.findPlaceById(tick.placeId).placeKindId).name}">
+              </td>
+              <td class = "text-right align-middle p-1"
+                  th:insert = "~{fragments/currency_format :: currency_format(${@calculator.addSum(placeKindServ.findPlaceKindById(placeServ.findPlaceById(tick.placeId).placeKindId).addPrice)})}">
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:insert = "~{fragments/currency_format :: currency_format(${@calculator.addSum(seanceServ.findSeanceById(tick.seanceId).getBasePrice())})}">
+        </td>
+        <td class = "text-center align-middle h6">
+
+          <table class = "w-100 table-not-striped table-borderless table-sm">
+            <th:block th:each = "add : ${ticketAdditionService.findTicketAdditionsByTicketId(tick.getId())}">
+              <tr th:style = "${not addStat.first} ? 'border-top: 1px solid #b3b7bb;'">
+                <td class = "text-left align-middle p-1"
+                    th:text = "${additionServ.findAdditionById(add.getAdditionId()).name}">
+                </td>
+                <td class = "text-right align-middle p-1"
+                    th:insert = "~{fragments/currency_format :: currency_format(${@calculator.addSum(additionServ.findAdditionById(add.getAdditionId()).price)})}">
+                </td>
+              </tr>
+            </th:block>
+          </table>
+
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:insert = "~{fragments/currency_format :: currency_format(${@calculator.stopSum()})}">
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:text = "${#dates.createNow().after(seanceServ.findSeanceById(tick.seanceId).getBeginTime())} == true  ? #{wordInvalid} : #{wordValid}">
+        </td>
+        <!-- <td class = "text-center  align-middle h6" -->
+        <!--     th:text = "${tick.code}"> -->
+        <!-- </td> -->
+        <td class = "text-center  align-middle h6 pt-3">
+          <span th:text="${tick.code}"></span>
+          <img th:src="${'data:image/png;base64,' + @qrcodeutils.base64EncFromByte(@qrcodeutils.getQRCodeImage('localhost:8080/ticket_info/' + tick.code, 128, 128))}" alt="" height="128" width="128">
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ******************************************* -->
+  <!-- * Buttons to send tickets by email        * -->
+  <!-- *    and via file                         * -->
+  <!-- ******************************************* -->
+
+  <th:block th:if = "${boughtTickets != null}">
+    <form class = "d-flex w-100 justify-content-end flex-wrap align-items-center my-5 pb-5"
+          th:action = "@{/client_tickets}"
+          method = "GET">
+
+      <!-- Button "send email"  -->
+      <button class = "btn btn-primary m-2 flex-grow-1 flex-sm-grow-0"
+              type = "submit"
+              name = "sendEmailTickets"
+              value = "true"
+              th:text = "#{buttonSendToEmail}">
+      </button>
+
+      <!-- Button "download"  -->
+      <button class = "btn btn-primary m-2 flex-grow-1 flex-sm-grow-0"
+              type = "submit"
+              name = "downloadTickets"
+              value = "true"
+              th:text = "#{buttonDownload}">
+      </button>
+    </form>
+  </th:block>
+</div>
+
+</body>
+
+
+<script th:inline = "javascript">
+
+    document.addEventListener("DOMContentLoaded", function (event) {
+        var user_was_logged = (localStorage.getItem('user_logged') != null);
+        var user_logged = ([[${session.loggedUser}]] != null);
+        var need_restore = [[${(error == null) || (error == '')}]];
+        if (user_logged !== user_was_logged) {
+            localStorage.removeItem('scroll_pos_seances');
+            localStorage.removeItem('scroll_pos_client_tickets');
+            localStorage.removeItem('scroll_pos_buy_ticket_form');
+        } else {
+            if (need_restore) {
+                var scroll_pos_client_tickets = localStorage.getItem('scroll_pos_client_tickets');
+                if (scroll_pos_client_tickets) window.scrollTo(0, scroll_pos_client_tickets);
+            }
+        }
+    });
+
+    window.onbeforeunload = function (e) {
+        var user_logged = ([[${session.loggedUser}]] != null);
+        if (user_logged) localStorage.setItem('user_logged', user_logged)
+        else localStorage.removeItem('user_logged');
+        localStorage.setItem('scroll_pos_client_tickets', window.scrollY);
+    };
+</script>
+
+
+</html>

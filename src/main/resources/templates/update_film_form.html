@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageUpdateFilmTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageUpdateFilmTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageUpdateFilmTitle}"></h1>
+      <div class = "card-body">
+        <form method = "POST"
+              enctype = "multipart/form-data"
+              th:action = "@{/update_film}"
+              th:object = "${film}">
+
+          <div class = "form-group">
+            <label th:text = "#{filmImageLabel}"></label>
+            <div class = "form-group">
+              <input class = "form-control-file"
+                     type = "file"
+                     accept = "image/*"
+                     name = "imageFile"
+                     th:title = "#{filmImageUpdateTitle}"
+              />
+            </div>
+          </div>
+
+          <div class = "form-group">
+            <label for = "name"
+                   th:text = "#{filmNameLabel}"></label>
+            <input class = "form-control"
+                   required
+                   type = "text"
+                   id = "name"
+                   name = "name"
+                   th:field = "*{name}"
+                   th:minlength = "${@environment.getProperty('film-name-min-length')}"
+                   th:maxlength = "${@environment.getProperty('film-name-max-length')}"
+                   th:placeholder = "#{filmNamePlaceholder}"
+                   th:title = "#{filmNameTitle(${@environment.getProperty('film-name-min-length')},
+                                                    ${@environment.getProperty('film-name-max-length')})}"
+            />
+          </div>
+
+          <div class = "form-group">
+            <label for = "duration"
+                   th:text = "#{filmDurationLabel}"></label>
+            <input class = "form-control"
+                   required
+                   type = "time"
+                   id = "duration"
+                   name = "duration"
+                   th:value = "*{duration}"
+                   th:min = "${@environment.getProperty('film-duration-min-value')}"
+            />
+          </div>
+
+          <div class = "form-group">
+            <label for = "description"
+                   th:text = "#{filmDescriptionLabel}"></label>
+            <textarea class = "form-control"
+                      required
+                      type = "text"
+                      id = "description"
+                      name = "description"
+                      th:field = "*{description}"
+                      th:minlength = "${@environment.getProperty('film-description-min-length')}"
+                      th:maxlength = "${@environment.getProperty('film-description-max-length')}"
+                      th:placeholder = "#{filmDescriptionPlaceholder}"
+                      th:title = "#{filmDescriptionTitle(${@environment.getProperty('film-description-min-length')},
+                                                    ${@environment.getProperty('film-description-max-length')})}">
+                        </textarea>
+          </div>
+
+          <div class = "form-group">
+            <label for = "year"
+                   th:text = "#{filmYearLabel}"></label>
+            <input required
+                   class = "form-control"
+                   type = "number"
+                   id = "year"
+                   name = "year"
+                   th:min = "${@environment.getProperty('film-year-min-value')}"
+                   th:max = "${#dates.year(#dates.createNow())}"
+                   th:step = "${@environment.getProperty('year-step')}"
+                   th:placeholder = "#{filmYearPlaceholder}"
+                   th:title = "#{filmYearTitle(${@environment.getProperty('film-year-min-value')},
+                                                    ${#dates.year(#dates.createNow())})}"
+                   th:value = "*{year}"
+            />
+          </div>
+
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    name = "filmId"
+                    type = "submit"
+                    th:value = "${filmId}"
+                    th:text = "#{buttonSaveChanges}">
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

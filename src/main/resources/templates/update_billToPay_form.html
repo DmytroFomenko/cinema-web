@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageUpdateBillToPayTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageUpdateBillToPayTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageUpdateBillToPayTitle}"></h1>
+      <div class = "card-body">
+        <form th:action = "@{/update_billToPay}"
+              th:object = "${billToPayObject}"
+              method = "POST">
+          <div class = "form-group">
+            <label for = "name"
+                   th:text = "#{billToPayNameLabel}"></label>
+            <input class = "form-control"
+                   required
+                   type = "text"
+                   id = "name"
+                   name = "name"
+                   th:minlength = "#{bill-to-pay-name.min-length}"
+                   th:maxlength = "#{bill-to-pay-name.max-length}"
+                   th:placeholder = "#{billToPayNamePlaceholder}"
+                   th:title = "#{billToPayNameTitle(#{bill-to-pay-name.min-length}, #{bill-to-pay-name.max-length})}"
+                   th:field = "*{name}"
+            />
+          </div>
+
+          <div class = "form-group">
+            <label for = "billToPay"
+                   th:text = "#{billToPayBillToPayLabel}"></label>
+            <input class = "form-control"
+                   required
+                   type = "text"
+                   id = "billToPay"
+                   name = "billToPay"
+                   th:pattern="${@environment.getProperty('bill-to-pay-pattern')}"
+                   th:placeholder = "#{billToPayBillToPayPlaceholder}"
+                   th:title = "#{billToPayBillToPayTitle(${@environment.getProperty('bill-to-pay.bill-to-pay-name-length')})}"
+                   th:field = "*{billToPay}"
+            />
+          </div>
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    type = "submit"
+                    name = "billToPayId"
+                    th:text = "#{buttonSaveChanges}"
+                    th:value = "${billToPayId}">
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

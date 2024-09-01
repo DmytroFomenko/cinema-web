@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/headchart :: headchart(#{pageFilmsStatisticsTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageFilmsStatisticsTitle},
+                                                      current_dropitem_no = '9')}"></div>
+
+
+<div class = "container-lg">
+
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <h1 class = "text-center m-3 mb-4 d-none"
+      th:text = "#{pageFilmsStatisticsTitle}"></h1>
+
+  <div class = "container-fluid w-90 my-3">
+    <form method = "GET"
+          id = "filmIdForm"
+          th:action = "@{/statistics_films}"
+          th:object = "${films}">
+
+      <div class = "form-group">
+        <label for = "filmId"
+               th:text = "#{statisticFilmLabel}"></label>
+        <select class = "form-control"
+                id = "filmId"
+                name = "filmId"
+                onchange = "let el=document.getElementById('filmIdForm'); el.submit();"
+        >
+          <option th:each = "film : ${films}"
+                  th:selected = "${film.id} == ${filmId}"
+                  th:text = "${film.name}"
+                  th:value = "${film.id}"
+
+          />
+        </select>
+      </div>
+    </form>
+  </div>
+
+
+  <div class = "container-fluid w-90 mt-4 mb-3 h5 p-2 text-left"
+       th:text = "#{statisticChartLabel}">
+  </div>
+  <!-- Chart -->
+  <div class = "chart-container d-flex-inline mx-auto align-middle w-90 align-items-center text-center bg-light"></div>
+  <script th:inline = "javascript">
+      var chartData = /*[[${chartData}]]*/ [];
+      window.onload = function () {
+          drawChart(chartData);
+      };
+  </script>
+
+
+  <div class = "w-100 mt-4 mb-3 py-5"
+       th:if = "${!seancesDatas.isEmpty()}">
+    <!-- Table of tickets -->
+    <table class = "table table-bordered table-sm">
+      <thead class = "table-info text-center">
+      <tr>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordNum}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordDate}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordTime}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{wordSeancePrice}">
+        </th>
+
+        <th class = "text-center  align-middle h5"
+            th:text = "#{phraseAllPlacesCount}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{phraseTicketsSold}">
+        </th>
+        <th class = "text-center  align-middle h5"
+            th:text = "#{phrasePercentageTicketsSold}">
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each = "seanceData : ${seancesDatas}">
+        <td class = "text-center  align-middle h6"
+            th:text = "${seanceData.counter}">
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:text = "${#dates.format(seanceData.beginTime, 'dd.MM.yy')}">
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:text = "${#dates.format(seanceData.beginTime, 'HH:mm')}">
+        </td>
+        <td class = "text-center align-middle p- h6"
+            th:insert = "~{fragments/currency_format :: currency_format(${seanceData.basePrice})}">
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:text = "${seanceData.allPlacesCount}">
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:text = "${seanceData.ticketsSold}">
+        </td>
+        <td class = "text-center  align-middle h6"
+            th:text = "|${seanceData.percentageTicketsSold}%|">
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+</body>
+
+</html>

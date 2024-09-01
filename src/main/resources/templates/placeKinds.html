@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pagePlaceKindsTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pagePlaceKindsTitle},
+                                                      current_dropitem_no = '5')}"></div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <h1 class = "text-center m-3 mb-4 d-none"
+      th:text = "#{pagePlaceKindsTitle}"></h1>
+
+  <form th:action = "@{/create_placeKind_form}"
+        method = "GET">
+    <button class = "btn btn-primary float-right m-3"
+            type = "submit"
+            th:text = "#{buttonCreateNewPlaceKind}">
+    </button>
+  </form>
+
+  <table class = "table table-sm table-striped table-bordered">
+    <thead class = "table-info text-center">
+      <tr>
+        <th class = "text-center  align-middle h5 p-3"
+            th:text = "#{wordPlaceKind}">
+        </th>
+        <th class = "text-center  align-middle h5 p-3"
+            th:text = "|#{wordPreCurrency}#{wordAddPrice}, #{wordPostCurrency}|">
+        </th>
+        <th class = "text-center  align-middle h5 p-3"
+            th:text = "#{wordActions}">
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each = "placeKind: ${placeKinds}">
+        <td class = "text-left  align-middle h6 p-1 pl-3"
+            th:text = "${placeKind.name}">
+        </td>
+        <td class = "text-center  align-middle h6 p-1"
+            th:insert = "~{fragments/currency_format :: currency_format(${placeKind.addPrice})}">
+        </td>
+        <td class = "text-center align-top p-0">
+          <!-- Action buttons -->
+          <form class = "d-inline-flex flex-wrap justify-content-center align-content-center align-items-center w-100"
+                th:action = "@{/update_placeKind_form}"
+                method = "GET">
+            <button type = "submit"
+                    class = "btn btn-primary m-1 flex-grow-1"
+                    name = "placeKindId"
+                    th:value = "${placeKind.id}"
+                    th:text = "#{buttonEdit}"
+                    th:formaction = "@{/update_placeKind_form}"
+                    th:formmethod = "GET"
+            />
+            <button class = "btn btn-danger m-1 flex-grow-1"
+                    type = "submit"
+                    name = "placeKindId"
+                    th:value = "${placeKind.id}"
+                    th:text = "#{buttonDelete}"
+                    th:formaction = "@{/delete_placeKind}"
+                    th:formmethod = "POST"
+            />
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>

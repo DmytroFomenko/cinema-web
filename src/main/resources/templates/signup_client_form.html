@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageSignUpClientTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = true,
+                                                      page_title = #{pageSignUpClientTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4"
+          th:text = "#{pageSignUpClientTitle}"></h1>
+
+      <div class = "card-body">
+
+        <form action = "#" method = "POST"
+              th:action = "@{/signup_client}"
+              th:object = "${enteredLoginData}">
+
+          <div class = "form-group">
+            <label for = "email"
+                   th:text = "#{emailClientLabel}"> </label>
+            <input class = "form-control"
+                   required
+                   type = "email"
+                   id = "email"
+                   th:field = "*{email}"
+                   th:pattern = "${@environment.getProperty('email-client-pattern')}"
+                   th:placeholder = "#{emailClientPlaceholder}"
+                   th:title = "#{emailClientTitle}"
+            />
+          </div>
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    type = "submit"
+                    formnovalidate
+                    name = "role"
+                    value = "client"
+                    th:formaction = "@{/send_client_email_code}"
+                    th:formmethod = "POST">
+              <span th:if = "${session.sentCodeText == null}"
+                    th:text = "#{buttonSendConfirmationCode}"/>
+              <span th:if = "${session.sentCodeText != null}"
+                    th:text = "#{buttonResendConfirmationCode}"/>
+            </button>
+          </div>
+
+          <div th:if = "${session.sentCodeText != null}">
+            <div class = "form-group">
+              <label for = "confirmCodeText"
+                     th:text = "#{confirmCodeLabel}">
+              </label>
+              <input autocomplete = "off"
+                     class = "form-control"
+                     id = "confirmCodeText"
+                     name = "confirmCodeText"
+                     required
+                     th:placeholder = "#{confirmCodePlaceholder}"
+                     th:title = "#{confirmCodeTitle}"
+                     th:value = "${confirmCodeText}"
+                     type = "text"
+              />
+            </div>
+            <div class = "form-group">
+              <label for = "nickname"
+                     th:utext = "#{nicknameLabel}">
+              </label>
+              <input class = "form-control"
+                     required
+                     type = "text"
+                     id = "nickname"
+                     th:field = "*{nickname}"
+                     th:pattern = "${@environment.getProperty('nickname-reg-pattern')}"
+                     th:placeholder = "#{nicknamePlaceholder}"
+                     th:title = "#{nicknameTitle(${@environment.getProperty('nickname-min-length')},
+                                                    ${@environment.getProperty('nickname-max-length')})}"
+              />
+            </div>
+            <div class = "form-group">
+              <label for = "password"
+                     th:text = "#{passwordLabel}">
+              </label>
+              <input required
+                     class = "form-control"
+                     type = "password"
+                     id = "password"
+                     name = "password"
+                     th:pattern = "${@environment.getProperty('password-reg-pattern')}"
+                     th:placeholder = "#{passwordPlaceholder}"
+                     th:title = "#{passwordRegTitle(${@environment.getProperty('password-min-length')},
+                                                    ${@environment.getProperty('password-max-length')})}"
+                     value = ""
+              />
+            </div>
+            <div class = "form-group">
+              <label for = "password2"
+                     th:text = "#{password2Label}">
+              </label>
+              <input class = "form-control"
+                     type = "password"
+                     required
+                     id = "password2"
+                     name = "password2"
+                     th:pattern = "${@environment.getProperty('password-reg-pattern')}"
+                     th:placeholder = "#{password2Placeholder}"
+                     th:title = "#{passwordRegTitle(${@environment.getProperty('password-min-length')},
+                                                    ${@environment.getProperty('password-max-length')})}"
+                     value = ""
+              />
+            </div>
+            <div class = "box-footer">
+              <button class = "btn btn-primary"
+                      type = "submit"
+                      th:text = "#{buttonSubmitRegistration}"
+              />
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

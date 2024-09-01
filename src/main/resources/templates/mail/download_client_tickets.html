@@ -1,0 +1,128 @@
+<!DOCTYPE HTML>
+<html lang="uk"
+      th:style = "${downloadTickets == true} ? 'font-family: PTSans' : _">
+<head>
+    <meta charset="utf-8">
+    <title>Ваші квитки</title>
+</head>
+<body>
+<div th:style="${downloadTickets == true} ? 'width:96%; margin: auto; font-size:0.55em' : 'width:96%; margin: auto; font-size: 1em'">
+    <h3 th:text="|Шановний ${loggedUser.getNickname()}!|"></h3>
+    <p>Дякуємо, що користуєтесь нашими послугами.</p>
+    <th:block th:if="${boughtTickets == null}">
+        <p>Нажаль, у вас немає квитків, що відповідають вибраним критеріям.</p>
+        <p>Відвідайте наш сайт і придбайте квитки на нові сеанси.</p>
+    </th:block>
+    <th:block th:if="${boughtTickets != null}">
+        <p>Не забудьте відвідати кіносеанси, на які ви вже придбали квитки:</p>
+        <div th:with="border_style = 'border: 1px solid #aaaaaa; padding: 5px 8px',
+                  border_head_style = 'border: 1px solid #aaaaaa; padding: 10px 8px; text-align: center',
+                  border_inner_top_style = 'border-top: 1px solid #aaaaaa; padding: 5px 8px',
+                  color_header = 'background-color: #bee8eb',
+                  table_style = ${border_style}
+                    + '; width: 100%; border-collapse: collapse; -fs-table-paginate: paginate; -fs-page-break-min-height: 1px',
+                  table_inner_style = 'width: 100%; border-collapse: collapse; page-break-inside: avoid',
+                  color_non_actual = 'background-color: #e8e8e8'">
+            <!-- Table of tickets -->
+            <table th:style="${table_style}">
+                <thead>
+                <tr th:style="${color_header}">
+                    <th th:style="${border_head_style}"
+                        th:text="#{wordTime}">
+                    </th>
+                    <th th:style="${border_head_style}"
+                        th:text="#{wordFilm}">
+                    </th>
+                    <th th:style="${border_head_style}"
+                        th:text="#{wordPlace}">
+                    </th>
+                    <th th:style="${border_head_style}"
+                        th:text="#{wordPlaceKind}">
+                    </th>
+                    <th th:style="${border_head_style}"
+                        th:text="#{wordSeancePrice}">
+                    </th>
+                    <th th:style="${border_head_style}"
+                        th:text="#{phraseAdditions}">
+                    </th>
+                    <th th:style="${border_head_style}"
+                        th:text="#{phraseTotalPrice}">
+                    </th>
+                    <th th:style="${border_head_style}"
+                        th:text="#{wordStatus}">
+                    </th>
+                    <th th:style="${border_head_style}"
+                        th:text="#{phraseTicketCode}">
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tick : ${boughtTickets}"
+                    th:style="${#dates.createNow().after(seanceServ.findSeanceById(tick.seanceId).beginTime)} == true  ? ${border_style} + ';'+ ${color_non_actual} : ${border_style}"
+                    th:with="x = ${@calculator.resetSum()}">
+
+                    <td th:style="${border_style}"
+                        th:text="${#dates.format(seanceServ.findSeanceById(tick.seanceId).beginTime, 'HH:mm / dd.MM.yy')}">
+                    </td>
+                    <td th:style="${border_style}"
+                        th:text="${filmServ.findFilmById(seanceServ.findSeanceById(tick.seanceId).filmId).name}">
+                    </td>
+                    <td th:style="${border_style} + '; text-align: center'"
+                        th:text="${placeServ.findPlaceById(tick.placeId).number}">
+                    </td>
+                    <!-- Place kind -->
+                    <td th:style="${border_style}">
+                        <table th:style="${table_inner_style}">
+                            <tr>
+                                <td style="text-align: left"
+                                    th:text="${placeKindServ.findPlaceKindById(placeServ.findPlaceById(tick.placeId).placeKindId).name}">
+                                </td>
+                                <td style="text-align: right; white-space: nowrap"
+                                    th:insert="~{fragments/currency_format :: currency_format(${@calculator.addSum(placeKindServ.findPlaceKindById(placeServ.findPlaceById(tick.placeId).placeKindId).addPrice)})}">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td th:style="${border_style} + '; text-align: center; white-space: nowrap'"
+                        th:insert="~{fragments/currency_format :: currency_format(${@calculator.addSum(seanceServ.findSeanceById(tick.seanceId).getBasePrice())})}">
+                    </td>
+                    <td th:style="${border_style}">
+                        <!-- Additions -->
+                        <table th:style="${table_inner_style}">
+                            <th:block
+                                    th:each="add : ${ticketAdditionService.findTicketAdditionsByTicketId(tick.getId())}">
+                                <tr th:style="${not addStat.first} ? ${border_inner_top_style}">
+                                    <td style="text-align: left;  padding: 5px"
+                                        th:text="${additionServ.findAdditionById(add.getAdditionId()).name}">
+                                    </td>
+                                    <td style="text-align: right;  padding: 5px; white-space: nowrap"
+                                        th:insert="~{fragments/currency_format :: currency_format(${@calculator.addSum(additionServ.findAdditionById(add.getAdditionId()).price)})}">
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </table>
+
+                    </td>
+                    <td th:style="${border_style} + '; text-align: center; white-space: nowrap'"
+                        th:insert="~{fragments/currency_format :: currency_format(${@calculator.stopSum()})}">
+                    </td>
+                    <td th:style="${border_style} + '; text-align: center'"
+                        th:text="${#dates.createNow().after(seanceServ.findSeanceById(tick.seanceId).beginTime)} == true  ? #{wordInvalid} : #{wordValid}">
+                    </td>
+                    <td th:style="${border_style} + '; text-align: center'">
+                        <div style="margin-top: 18px" th:text="${tick.code}"></div>
+                        <div>
+                            <img th:src="${'data:image/png;base64,' + @qrcodeutils.base64EncFromByte(@qrcodeutils.getQRCodeImage('localhost:8080/ticket_info/' + tick.code, 128, 128))}" alt="" height="128" width="128">
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </th:block>
+    <p style="margin: 15px 30px 50px 30px;">
+        Бажаємо гарно провести час за переглядом.
+    </p>
+</div>
+</body>
+</html>

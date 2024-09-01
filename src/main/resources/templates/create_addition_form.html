@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageCreateAdditionTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageCreateAdditionTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageCreateAdditionTitle}"></h1>
+      <div class = "card-body">
+        <form method = "POST"
+              th:action = "@{/create_addition}"
+              th:object = "${addition}">
+          <div class = "form-group">
+            <label for = "name"
+                   th:text = "#{additionNameLabel}"></label>
+            <input class = "form-control"
+                   required
+                   type = "text"
+                   id = "name"
+                   name = "name"
+                   th:minlength = "${@environment.getProperty('addition-name.min-length')}"
+                   th:maxlength = "${@environment.getProperty('addition-name.max-length')}"
+                   th:placeholder = "#{additionNamePlaceholder}"
+                   th:title = "#{additionNameTitle(${@environment.getProperty('addition-name.min-length')},
+                                                ${@environment.getProperty('addition-name.max-length')})}"
+                   th:field = "*{name}"
+
+            />
+          </div>
+
+          <div class = "form-group">
+            <label for = "price"
+                   th:text = "#{additionPriceLabel(#{wordPreCurrency},#{wordPostCurrency})}"></label>
+            <input required
+                   class = "form-control"
+                   type = "number"
+                   id = "price"
+                   name = "price"
+                   th:min = "${@environment.getProperty('price-min-value')}"
+                   th:max = "${@environment.getProperty('price-max-value')}"
+                   th:step = "${@environment.getProperty('price-step')}"
+                   th:placeholder = "#{additionPricePlaceholder(#{wordPreCurrency},#{wordPostCurrency})}"
+                   th:title = "#{additionPriceTitle(#{wordPreCurrency},
+                                                    #{wordPostCurrency},
+                                                    ${@environment.getProperty('price-step')})}"
+
+                   th:value="*{price} == null ? '' : (${@environment.getProperty('price-step', Double)} < 1 ?
+                                    ${#numbers.formatDecimal(__${addition.price}__, 1, 'NONE', 2, 'POINT')} :
+                                     ${#numbers.formatDecimal(__${addition.price}__, 1, 'NONE', 0, 'POINT')})"
+            />
+<!--            th:value = "*{price} == null ? '' : *{#numbers.formatDecimal(price, 1, 'NONE', 0, 'DEFAULT')}"-->
+          </div>
+
+          <div class = "form-group">
+            <p>
+              <label for = "available"
+                     th:text = "#{additionAvailableLabel}"> </label>
+              <input type = "checkbox"
+                     id = "available"
+                     name = "available"
+                     th:checked = "${addition.available == true ? 'on' : null}"
+              />
+          </div>
+
+          <div class = "box-footer">
+            <button class = "btn btn-primary"
+                    th:text = "#{buttonSave}"
+                    type = "submit">
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

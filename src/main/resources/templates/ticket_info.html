@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+<head th:replace = "~{fragments/head :: head(#{pageSeancesTitle})}"></head>
+
+<body>
+
+
+<div class = "container-lg">
+
+  <th:block th:if="${isExists != null}">
+    <!-- <div th:text = "${isValidMessage} == true ? (#{ticketActual}) : (#{ticketNotActual})" th:style="|display: flex; align-items: center; justify-content: center; margin: 20px; border-radius: 7px; height: 200px; text-align: center; font-size: 4em; font-weight: bold; ${isValidMessage == true ? ' background-color: #8aff9d; border: 3px solid #23db29;' : ' background-color: #ffca99;  border: 3px solid #ff9029;'}|"></div> -->
+
+    <div th:if="${message == 'actual'}">
+      <div th:text="#{ticketActual}" style="display: flex; align-items: center; justify-content: center; margin: 20px; border-radius: 7px; height: 200px; text-align: center; font-size: 4em; font-weight: bold; background-color: #8aff9d; border: 3px solid #23db29;|"></div>
+    </div>
+    <div th:if="${message == 'notActual'}">
+      <div th:text="#{ticketNotActual}" style="display: flex; align-items: center; justify-content: center; margin: 20px; border-radius: 7px; height: 200px; text-align: center; font-size: 4em; font-weight: bold; background-color: #ffca99;  border: 3px solid #ff9029;|"></div>
+    </div>
+    <div th:if="${message == 'expired'}">
+      <div th:text="#{ticketExpired}" style="display: flex; align-items: center; justify-content: center; margin: 20px; border-radius: 7px; height: 200px; text-align: center; font-size: 4em; font-weight: bold; background-color: #ff8aad;  border: 3px solid #d1473d;|"></div>
+    </div>
+
+  </th:block>
+
+  <th:block th:if="${isExists == null}">
+    <div th:text = "#{ticketNotExists}" style="display: flex; align-items: center; justify-content: center; margin: 20px; border-radius: 7px; height: 200px; text-align: center; font-size: 4em; font-weight: bold; background-color: #ff8aad; border: 3px solid #d1473d;"></div>
+  </th:block>
+
+
+  <th:block th:if="${isExists != null}">
+    <th:block th:if = "${isExists}">
+      <br>
+      <div th:text="#{ticketBasicData}" style="text-align: center; font-size: 2em; font-weight: bold; margin: 10px"></div>
+
+      <div style="font-size: 2em;">
+        <table align="center">
+          <tr>
+            <td class = "text-left align-middle p-2 pr-3">
+              <span th:text="|#{filmNameLabel}:|"></span>
+            </td>
+            <td>
+              <span th:text = "${film.name}"></span>
+            </td>
+          </tr>
+          <tr>
+            <td class = "text-left align-middle p-2 pr-3">
+              <span th:text = "|#{seanceDataText}:|"></span>
+            </td>
+            <td>
+              <span th:text = "|${#dates.format(seance.beginTime, 'dd.MM.yy')}|"></span>
+            </td>
+          </tr>
+          <tr>
+            <td class = "text-left align-middle p-2 pr-3">
+              <span th:text = "|#{seanceTimeText}:|"></span>
+            </td>
+            <td>
+              <span th:text = "|${#dates.format(seance.beginTime, 'HH:mm')} - ${#dates.format(seance.calcEndTime(film.duration), 'HH:mm')}|"></span>
+            </td>
+          </tr>
+
+        </table>
+      </div>
+    </th:block>
+  </th:block>
+
+</div>
+
+</body>
+
+</html>

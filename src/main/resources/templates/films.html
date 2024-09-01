@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageFilmsTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageFilmsTitle},
+                                                      current_dropitem_no = '3')}"></div>
+
+<div class = "container-lg">
+
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+
+  <h1 class = "text-center m-3 mb-4 d-none"
+      th:text = "#{pageFilmsTitle}"></h1>
+
+  <form method = "GET"
+        th:action = "@{/create_film_form}">
+    <button class = "btn btn-primary float-right m-3"
+            type = "submit"
+            th:text = "#{buttonCreateNewFilm}"
+    />
+  </form>
+
+  <!-- Additions table -->
+  <table class = "table table-sm table-striped table-bordered">
+    <thead class = "table-info text-center">
+    <!-- Header of table -->
+    <tr>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordFilmImage}"></th>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordFilm}"></th>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordDuration}"></th>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordDescription}"></th>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordCreationYear}"></th>
+      <th class = "text-center  align-middle h5 p-3"
+          th:text = "#{wordActions}"></th>
+    </tr>
+    <!-- Addition datas -->
+    </thead>
+    <tbody>
+    <tr th:each = "film: ${films}">
+      <td class = "text-center  align-middle h6 p-2">
+        <img alt = "film image"
+             th:src = "@{'/'+${@environment.getProperty('app.cinemafiles-dir-name')}+'/'+${film.imageName}}"
+             width = "100%"
+        />
+      </td>
+      <td class = "text-center  align-middle h5 p-3"
+          th:text = "${film.name}">
+      </td>
+      <!-- Availability -->
+      <!-- th:text = "${#dates.format(film.duration, 'HH:mm')}" -->
+      <td class = "text-center  align-middle h5 p-3"
+      <span th:text = "|${#numbers.formatInteger(film.duration.getHour(), 1)}:${#numbers.formatInteger(film.duration.getMinute(), 2)}|"/>
+      </td>
+      <td class = "text-justify align-middle h6 p-3"
+          th:text = "${film.description}"
+      />
+      <td class = "text-center  align-middle h5 p-3"
+          th:text = "${film.year}"
+      />
+      <td class = "text-center align-middle p-0">
+        <!-- Action buttons -->
+        <form class = "d-inline-flex flex-wrap justify-content-center align-content-center align-items-center w-100"
+              method = "GET"
+              th:action = "@{/update_film_form}">
+          <button class = "btn btn-primary m-1 flex-grow-1"
+                  type = "submit"
+                  name = "filmId"
+                  th:formaction = "@{/update_film_form}"
+                  th:formmethod = "GET"
+                  th:text = "#{buttonEdit}"
+                  th:value = "${film.id}"
+          />
+          <button class = "btn btn-danger m-1 flex-grow-1"
+                  type = "submit"
+                  name = "filmId"
+                  th:formaction = "@{/delete_film}"
+                  th:formmethod = "POST"
+                  th:text = "#{buttonDelete}"
+                  th:value = "${film.id}"
+          />
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>

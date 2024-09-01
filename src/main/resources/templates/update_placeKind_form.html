@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+
+<head th:replace = "~{fragments/head :: head(#{pageUpdatePlaceKindTitle})}"></head>
+
+<body>
+
+<div th:replace = "~{fragments/menus :: navbar_common(hide_login_logout = false,
+                                                      page_title = #{pageUpdatePlaceKindTitle},
+                                                      current_dropitem_no = '_')}"></div>
+
+
+<div class = "container-lg">
+  <div th:replace = "~{fragments/div_error :: div_error(${error})}"></div>
+  <div class = "row">
+    <div class = "col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+      <h1 class = "text-center m-3 mb-4 d-none"
+          th:text = "#{pageUpdatePlaceKindTitle}"></h1>
+      <div class = "card-body">
+        <form th:action = "@{/update_placeKind}"
+              th:object = "${placeKind}"
+              method = "POST">
+          <div class = "form-group">
+            <label for = "name"
+                   th:text = "#{placeKindNameLabel}"></label>
+            <input class = "form-control"
+                   required
+                   type = "text"
+                   id = "name"
+                   name = "name"
+                   th:field = "*{name}"
+                   th:minlength = "${@environment.getProperty('place-kind-name.min-length')}"
+                   th:maxlength = "${@environment.getProperty('place-kind-name.max-length')}"
+                   th:placeholder = "#{placeKindNamePlaceholder}"
+                   th:title = "#{placeKindNameTitle(${@environment.getProperty('place-kind-name.min-length')},
+                                                    ${@environment.getProperty('place-kind-name.max-length')})}"
+            />
+          </div>
+
+          <div class = "form-group">
+            <label for = "addPrice"
+                   th:text = "#{placeKindPriceLabel(#{wordPreCurrency},#{wordPostCurrency})}"></label>
+            <input class = "form-control"
+                   required
+                   type = "number"
+                   id = "addPrice"
+                   name = "addPrice"
+                   th:min = "${@environment.getProperty('price-min-value')}"
+                   th:max = "${@environment.getProperty('price-max-value')}"
+                   th:step = "${@environment.getProperty('price-step')}"
+                   th:placeholder = "#{placeKindPricePlaceholder(#{wordPreCurrency},#{wordPostCurrency})}"
+                   th:title = "#{placeKindPriceTitle(#{wordPreCurrency},
+                                                     #{wordPostCurrency},
+                                                     ${@environment.getProperty('price-step')})}"
+                   th:value = "${placeKind.addPrice} == null ? '' : (${@environment.getProperty('price-step', Double)} < 1.0 ?
+                                    ${#numbers.formatDecimal(__${placeKind.addPrice}__, 1, 'NONE', 2, 'POINT')} :
+                                     ${#numbers.formatDecimal(__${placeKind.addPrice}__, 1, 'NONE', 0, 'POINT')})"
+            />
+          </div>
+
+          <div class = "box-footer">
+            <input type = "hidden"
+                   name = "placeKindId"
+                   th:value = "${placeKindId}"/>
+            <button type = "submit"
+                    class = "btn btn-primary"
+                    th:text = "#{buttonSaveChanges}">
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
